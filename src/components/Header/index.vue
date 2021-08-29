@@ -9,6 +9,7 @@
 </template>
 <script>
 import UserPanel from "@/components/Header/components/UserPanel";
+
 export default {
   name: "Header",
   components: {

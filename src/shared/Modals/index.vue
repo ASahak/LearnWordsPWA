@@ -14,11 +14,13 @@
 import { onMounted, ref } from "vue";
 import EmitterBus from "@/utils/eventBus";
 import UserDetailsModal from "@/shared/Modals/UserDetails";
+import FilterByModal from "@/shared/Modals/FilterByModal";
 
 export default {
   name: "modals",
   components: {
     "user-details-modal": UserDetailsModal,
+    "filter-by-modal": FilterByModal,
   },
   emits: ["toggle-modal-bg-image"],
   setup(_props, context) {

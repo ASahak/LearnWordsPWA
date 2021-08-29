@@ -60,7 +60,7 @@ export default {
   font-size: 12px;
   padding: 6px 16px;
   align-items: center;
-  height: 14px;
+  height: 26px;
   font-weight: 600;
 }
 

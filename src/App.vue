@@ -24,7 +24,7 @@
 </template>
 <script>
 import { ref } from "vue";
-import NativePanel from "@/components/NativeOptionsTopPanel";
+import NativePanel from "@/shared/NativeOptionsTopPanel";
 import Modals from "@/shared/Modals";
 import EmitterBus from "@/utils/eventBus";
 
@@ -52,6 +52,10 @@ export default {
 };
 </script>
 <style>
+* {
+  box-sizing: border-box;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -82,6 +86,7 @@ export default {
 .section-transition--wrapper {
   z-index: 222;
   position: relative;
+  overflow: hidden;
 }
 
 .main_container > img {
@@ -105,5 +110,33 @@ export default {
   background-position: center;
   padding: 16px 24px;
   box-sizing: border-box;
+}
+
+/*Global styles*/
+.input-container {
+  padding: 16px 0;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+  display: flex;
+}
+.input-container > label {
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+}
+.input-container > input {
+  border: none;
+  border-bottom: 2px solid #3333;
+  width: 100%;
+  outline: none;
+  padding: 8px 8px 8px 30px;
+}
+
+.input-container .input-icon {
+  position: absolute;
+  left: 0;
+  font-size: 17px;
+  color: #ccc;
 }
 </style>
