@@ -1,21 +1,15 @@
 <template>
-  <!--  <modal v-if="true">-->
-  <h1>Modal</h1>
-  <!--  </modal>-->
+  <div class="backdrop-wrapper">
+    <div class="modal-container">
+      <h1>Modal</h1>
+    </div>
+  </div>
 </template>
 <script>
-// import { reactive } from "vue";
-
 export default {
   name: "user-details-modal",
   setup() {
-    // const state = reactive({
-    //   isShow: false,
-    // });
-
-    return {
-      // isShow: state.isShow,
-    };
+    return {};
   },
 };
 </script>

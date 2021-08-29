@@ -1,7 +1,12 @@
 <template>
   <div class="main_container">
     <!--  BG image for desktop  -->
-    <img src="/img/bg.png" alt="" />
+    <img
+      src="/img/bg.png"
+      alt="bg-image"
+      :style="{ zIndex: modalBG ? '22222' : '1' }"
+      @click="closeDialog"
+    />
     <!--  Like mobile native functions  -->
     <NativePanel />
 
@@ -14,17 +19,35 @@
     </div>
 
     <!--  Modals container  -->
-    <Modals />
+    <Modals @toggleModalBgImage="toggleModalBg" />
   </div>
 </template>
 <script>
+import { ref } from "vue";
 import NativePanel from "@/components/NativeOptionsTopPanel";
 import Modals from "@/shared/Modals";
+import EmitterBus from "@/utils/eventBus";
 
 export default {
   components: {
     NativePanel,
     Modals,
+  },
+  setup() {
+    const modalBG = ref(null);
+    const toggleModalBg = (v) => (modalBG.value = v);
+
+    const closeDialog = () => {
+      if (modalBG.value) {
+        EmitterBus.$emit("toggle-modal", null);
+      }
+    };
+
+    return {
+      toggleModalBg,
+      modalBG,
+      closeDialog,
+    };
   },
 };
 </script>
