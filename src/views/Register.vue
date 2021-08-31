@@ -1,13 +1,27 @@
 <template>
   <div>
-    <NavigationHeader title="Login" />
+    <NavigationHeader title="Register" />
     <div class="entry-container">
       <div class="title-container">
-        <h1>Welcome back</h1>
-        <p>Sign in to continue</p>
+        <h1>Create an account</h1>
+        <p>Create to make your life easy</p>
       </div>
       <form @submit.prevent="onSubmit">
-        <font-awesome-icon icon="user" class="entry-icon" />
+        <div
+          class="input-container"
+          :class="{ 'error-field': v$.username.$error }"
+        >
+          <label>Username</label>
+          <font-awesome-icon icon="at" class="input-icon" />
+          <input
+            type="text"
+            placeholder="Type your username"
+            v-model="state.username"
+          />
+          <p v-if="v$.username.$error" class="error-msg">
+            {{ v$.username.$errors[0].$message }}
+          </p>
+        </div>
         <div
           class="input-container"
           :class="{ 'error-field': v$.email.$error }"
@@ -38,13 +52,25 @@
             {{ v$.password.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Sign In" class="entry-btn" />
-        <router-link to="/forgot-password" class="entry-links"
-          >Forgot password?</router-link
+        <div
+          class="input-container"
+          :class="{ 'error-field': v$.confirm_password.$error }"
         >
+          <label>Confirm Password</label>
+          <font-awesome-icon icon="lock" class="input-icon" />
+          <input
+            type="password"
+            placeholder="Repeat your password"
+            v-model="state.confirm_password"
+          />
+          <p v-if="v$.confirm_password.$error" class="error-msg">
+            {{ v$.confirm_password.$errors[0].$message }}
+          </p>
+        </div>
+        <input type="submit" value="Sign Up" class="entry-btn" />
         <p class="dont-have-account">
-          Don't have an account? &nbsp;
-          <router-link to="/register" class="entry-links"> Sign Up</router-link>
+          Have an account? &nbsp;
+          <router-link to="/login" class="entry-links"> Sign In</router-link>
         </p>
       </form>
     </div>
@@ -57,18 +83,22 @@ import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
 
 export default {
-  name: "login",
+  name: "register",
   components: {
     NavigationHeader,
   },
   setup() {
     const state = reactive({
+      username: "",
       email: "",
       password: "",
+      confirm_password: "",
     });
 
     const rules = computed(() => ({
+      username: { required },
       password: { required },
+      confirm_password: { required },
       email: { required, email },
     }));
 
@@ -128,19 +158,11 @@ export default {
   background: #24217ccf;
 }
 
-.entry-icon {
-  text-align: center;
-  font-size: 50px;
-  margin-bottom: 30px;
-  font-weight: bold;
-  color: #191675;
-}
-
 .dont-have-account {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
+  margin: 10px 0;
   font-size: 13px;
   color: #8c8989;
   line-height: 5px;

@@ -114,6 +114,9 @@ export default {
 
 /*Global styles*/
 .input-container {
+  transition: 0.2s;
+  transition-property: margin-bottom;
+  margin-bottom: 0px;
   padding: 16px 0;
   flex-direction: row;
   position: relative;
@@ -138,5 +141,20 @@ export default {
   left: 0;
   font-size: 17px;
   color: #ccc;
+}
+
+.input-container.error-field {
+  margin-bottom: 10px;
+}
+
+.input-container.error-field input {
+  border-bottom: 2px solid #ff0000c9;
+}
+
+.input-container.error-field .error-msg {
+  position: absolute;
+  bottom: -8px;
+  font-size: 10px;
+  color: #ff0000c9;
 }
 </style>
