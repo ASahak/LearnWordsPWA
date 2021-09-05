@@ -1,11 +1,11 @@
 <template>
-  <div class="filter-by--container">
-    <div class="left--side">
+  <div :class="classes['filter-by--container']">
+    <div :class="classes['left--side']">
       <button @click="openFilterByModal">All Words</button>
     </div>
-    <div class="right--side">
+    <div :class="classes['right--side']">
       <span> 1 / 1</span>
-      <div class="next-prev-arrows--wrapper">
+      <div :class="classes['next-prev-arrows--wrapper']">
         <span class="lnr lnr-chevron-left"></span>
         <span class="lnr lnr-chevron-right"></span>
       </div>
@@ -13,60 +13,60 @@
   </div>
 </template>
 <script>
+import { createUseStyles } from "vue-jss";
 import EmitterBus from "@/utils/eventBus";
 
+const useStyles = createUseStyles({
+  "filter-by--container": {
+    marginTop: 16,
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gridTemplateRows: "1fr",
+    alignItems: "center",
+  },
+  "right--side": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontSize: "14px",
+  },
+  "next-prev-arrows--wrapper": {
+    "& span": {
+      fontWeight: 900,
+      fontSize: 16,
+      cursor: "pointer",
+      marginLeft: 7,
+    },
+  },
+  "left--side": {
+    textAlign: "left",
+    "& > button": {
+      cursor: "pointer",
+      background: "#24217c",
+      border: "none",
+      padding: "6px 10px",
+      borderRadius: 4,
+      color: "#fff",
+      fontSize: 12,
+      minWidth: 100,
+      transition: "0.2s",
+      "&:hover": {
+        background: "#24217ccf",
+      },
+    },
+  },
+});
 export default {
   name: "filter-by",
   setup() {
-    const openFilterByModal = () => {
-      EmitterBus.$emit("toggle-modal", "filter-by-modal");
-    };
+    const classes = useStyles();
 
-    return {
-      openFilterByModal,
-    };
+    return { classes };
+  },
+  methods: {
+    openFilterByModal() {
+      EmitterBus.$emit("toggle-modal", "filter-by-modal");
+    },
   },
 };
 </script>
-<style>
-.filter-by--container {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 1fr;
-  align-items: center;
-}
-.right--side {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.next-prev-arrows--wrapper span {
-  font-weight: 900;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 7px;
-}
-
-.left--side {
-  text-align: left;
-}
-
-.left--side > button {
-  cursor: pointer;
-  background: #24217c;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 12px;
-  min-width: 100px;
-  transition: 0.2s;
-}
-
-.left--side > button:hover {
-  background: #24217ccf;
-}
-</style>

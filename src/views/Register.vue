@@ -1,15 +1,17 @@
 <template>
   <div>
     <NavigationHeader title="Register" />
-    <div class="entry-container">
-      <div class="title-container">
+    <div :class="classes.entryContainer">
+      <div :class="classes.titleContainer">
         <h1>Create an account</h1>
         <p>Create to make your life easy</p>
       </div>
       <form @submit.prevent="onSubmit">
         <div
-          class="input-container"
-          :class="{ 'error-field': v$.username.$error }"
+          :class="[
+            gClasses.inputContainer,
+            { 'error-field': v$.username.$error },
+          ]"
         >
           <label>Username</label>
           <font-awesome-icon icon="at" class="input-icon" />
@@ -23,8 +25,7 @@
           </p>
         </div>
         <div
-          class="input-container"
-          :class="{ 'error-field': v$.email.$error }"
+          :class="[gClasses.inputContainer, { 'error-field': v$.email.$error }]"
         >
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
@@ -38,8 +39,10 @@
           </p>
         </div>
         <div
-          class="input-container"
-          :class="{ 'error-field': v$.password.$error }"
+          :class="[
+            gClasses.inputContainer,
+            { 'error-field': v$.password.$error },
+          ]"
         >
           <label>Password</label>
           <font-awesome-icon icon="lock" class="input-icon" />
@@ -53,8 +56,10 @@
           </p>
         </div>
         <div
-          class="input-container"
-          :class="{ 'error-field': v$.confirm_password.$error }"
+          :class="[
+            gClasses.inputContainer,
+            { 'error-field': v$.confirm_password.$error },
+          ]"
         >
           <label>Confirm Password</label>
           <font-awesome-icon icon="lock" class="input-icon" />
@@ -67,10 +72,12 @@
             {{ v$.confirm_password.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Sign Up" class="entry-btn" />
-        <p class="dont-have-account">
+        <input type="submit" value="Sign Up" :class="classes.entryBtn" />
+        <p :class="classes.dontHaveAccount">
           Have an account? &nbsp;
-          <router-link to="/login" class="entry-links"> Sign In</router-link>
+          <router-link to="/login" :class="classes.entryLinks">
+            Sign In</router-link
+          >
         </p>
       </form>
     </div>
@@ -79,8 +86,69 @@
 <script>
 import { reactive, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { required, email } from "@vuelidate/validators";
+import { createUseStyles } from "vue-jss";
+import { required, email, sameAs, minLength } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
+
+const useStyles = createUseStyles({
+  titleContainer: {
+    marginTop: 50,
+    marginBottom: 50,
+    textAlign: "left",
+    "& p": {
+      fontSize: 12,
+      color: "#888484",
+      margin: 0,
+    },
+    "& h1": {
+      fontSize: 30,
+      fontWeight: "bold",
+      color: "#191675",
+      margin: 0,
+    },
+  },
+  entryContainer: {
+    padding: "10px 30px",
+  },
+  entryBtn: {
+    cursor: "pointer",
+    background: "#24217c",
+    border: "none",
+    padding: "6px 10px",
+    borderRadius: 4,
+    color: "#fff",
+    fontSize: 14,
+    minWidth: 100,
+    transition: "0.2s",
+    width: "100%",
+    "&:hover": {
+      background: "#24217ccf",
+    },
+  },
+  entryIcon: {
+    textAlign: "center",
+    fontSize: 50,
+    marginBottom: 30,
+    fontWeight: "bold",
+    color: "#191675",
+  },
+  dontHaveAccount: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "5px 0 0",
+    fontSize: "13px",
+    color: "#8c8989",
+    lineHeight: "5px",
+  },
+  entryLinks: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#8c8989",
+    margin: "5px 0",
+    display: "inline-block",
+  },
+});
 
 export default {
   name: "register",
@@ -88,6 +156,7 @@ export default {
     NavigationHeader,
   },
   setup() {
+    const classes = useStyles();
     const state = reactive({
       username: "",
       email: "",
@@ -97,14 +166,14 @@ export default {
 
     const rules = computed(() => ({
       username: { required },
-      password: { required },
-      confirm_password: { required },
+      password: { required, minLength: minLength(6) },
+      confirm_password: { required, sameAs: sameAs(state.password) },
       email: { required, email },
     }));
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$ };
+    return { state, v$, classes };
   },
   methods: {
     async onSubmit() {
@@ -117,62 +186,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.title-container {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  text-align: left;
-}
-
-.title-container p {
-  font-size: 12px;
-  color: #888484;
-  margin: 0;
-}
-
-.title-container h1 {
-  font-size: 30px;
-  font-weight: bold;
-  color: #191675;
-  margin: 0;
-}
-
-.entry-container {
-  padding: 10px 30px;
-}
-
-.entry-btn {
-  cursor: pointer;
-  background: #24217c;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
-  min-width: 100px;
-  transition: 0.2s;
-  width: 100%;
-}
-
-.entry-btn:hover {
-  background: #24217ccf;
-}
-
-.dont-have-account {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 10px 0;
-  font-size: 13px;
-  color: #8c8989;
-  line-height: 5px;
-}
-
-.entry-links {
-  text-align: center;
-  font-size: 13px;
-  color: #8c8989;
-  margin: 5px 0;
-  display: inline-block;
-}
-</style>

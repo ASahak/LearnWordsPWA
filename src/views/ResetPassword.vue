@@ -1,13 +1,13 @@
 <template>
   <div>
-    <NavigationHeader title="Login" />
+    <NavigationHeader title="Reset password" />
     <div :class="classes.entryContainer">
       <div :class="classes.titleContainer">
-        <h1>Welcome back</h1>
-        <p>Sign in to continue</p>
+        <h1>Reset Password</h1>
+        <p>Send your email for reset!</p>
       </div>
       <form @submit.prevent="onSubmit">
-        <font-awesome-icon icon="user" :class="classes.entryIcon" />
+        <font-awesome-icon icon="key" :class="classes.entryIcon" />
         <div
           :class="[gClasses.inputContainer, { 'error-field': v$.email.$error }]"
         >
@@ -22,34 +22,7 @@
             {{ v$.email.$errors[0].$message }}
           </p>
         </div>
-        <div
-          class="input-container"
-          :class="[
-            gClasses.inputContainer,
-            { 'error-field': v$.password.$error },
-          ]"
-        >
-          <label>Password</label>
-          <font-awesome-icon icon="lock" class="input-icon" />
-          <input
-            type="password"
-            placeholder="Type your password"
-            v-model="state.password"
-          />
-          <p v-if="v$.password.$error" class="error-msg">
-            {{ v$.password.$errors[0].$message }}
-          </p>
-        </div>
-        <input type="submit" value="Sign In" :class="classes.entryBtn" />
-        <router-link to="/reset-password" :class="classes.entryLinks"
-          >Forgot password?</router-link
-        >
-        <p :class="classes.dontHaveAccount">
-          Don't have an account? &nbsp;
-          <router-link to="/register" :class="classes.entryLinks">
-            Sign Up</router-link
-          >
-        </p>
+        <input type="submit" value="Send" :class="classes.entryBtn" />
       </form>
     </div>
   </div>
@@ -103,26 +76,10 @@ const useStyles = createUseStyles({
     fontWeight: "bold",
     color: "#191675",
   },
-  dontHaveAccount: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0",
-    fontSize: "13px",
-    color: "#8c8989",
-    lineHeight: "5px",
-  },
-  entryLinks: {
-    textAlign: "center",
-    fontSize: 13,
-    color: "#8c8989",
-    margin: "5px 0",
-    display: "inline-block",
-  },
 });
 
 export default {
-  name: "login",
+  name: "reset-password",
   components: {
     NavigationHeader,
   },
@@ -130,11 +87,9 @@ export default {
     const classes = useStyles();
     const state = reactive({
       email: "",
-      password: "",
     });
 
     const rules = computed(() => ({
-      password: { required },
       email: { required, email },
     }));
 
