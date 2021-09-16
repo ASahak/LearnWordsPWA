@@ -23,7 +23,8 @@
   </div>
 </template>
 <script>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+import { useStore } from "vuex";
 import NativePanel from "@/shared/NativeOptionsTopPanel";
 import Modals from "@/shared/Modals";
 import EmitterBus from "@/utils/eventBus";
@@ -34,6 +35,7 @@ export default {
     Modals,
   },
   setup() {
+    const store = useStore();
     const modalBG = ref(null);
     const toggleModalBg = (v) => (modalBG.value = v);
 
@@ -42,6 +44,10 @@ export default {
         EmitterBus.$emit("toggle-modal", null);
       }
     };
+
+    onBeforeMount(() => {
+      store.dispatch("auth/setUserData", { byRoot: true });
+    });
 
     return {
       toggleModalBg,

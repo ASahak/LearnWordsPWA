@@ -15,6 +15,7 @@
 <script>
 import { createUseStyles } from "vue-jss";
 import EmitterBus from "@/utils/eventBus";
+import variables from "@/styles/variables";
 
 const useStyles = createUseStyles({
   "filter-by--container": {
@@ -42,7 +43,7 @@ const useStyles = createUseStyles({
     textAlign: "left",
     "& > button": {
       cursor: "pointer",
-      background: "#24217c",
+      background: variables.$mainBlueColor,
       border: "none",
       padding: "6px 10px",
       borderRadius: 4,
@@ -51,7 +52,7 @@ const useStyles = createUseStyles({
       minWidth: 100,
       transition: "0.2s",
       "&:hover": {
-        background: "#24217ccf",
+        background: variables.$mainBlueHoverColor,
       },
     },
   },

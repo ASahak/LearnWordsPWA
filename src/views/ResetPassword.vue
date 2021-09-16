@@ -9,7 +9,10 @@
       <form @submit.prevent="onSubmit">
         <font-awesome-icon icon="key" :class="classes.entryIcon" />
         <div
-          :class="[gClasses.inputContainer, { 'error-field': v$.email.$error }]"
+          :class="[
+            gClasses['input-container'],
+            { 'error-field': v$.email.$error },
+          ]"
         >
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
@@ -33,6 +36,7 @@ import useVuelidate from "@vuelidate/core";
 import { createUseStyles } from "vue-jss";
 import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
+import variables from "@/styles/variables";
 
 const useStyles = createUseStyles({
   titleContainer: {
@@ -47,7 +51,7 @@ const useStyles = createUseStyles({
     "& h1": {
       fontSize: 30,
       fontWeight: "bold",
-      color: "#191675",
+      color: variables.$titleColor,
       margin: 0,
     },
   },
@@ -56,7 +60,7 @@ const useStyles = createUseStyles({
   },
   entryBtn: {
     cursor: "pointer",
-    background: "#24217c",
+    background: variables.$mainBlueColor,
     border: "none",
     padding: "6px 10px",
     borderRadius: 4,
@@ -66,7 +70,7 @@ const useStyles = createUseStyles({
     transition: "0.2s",
     width: "100%",
     "&:hover": {
-      background: "#24217ccf",
+      background: variables.$mainBlueHoverColor,
     },
   },
   entryIcon: {
@@ -74,7 +78,7 @@ const useStyles = createUseStyles({
     fontSize: 50,
     marginBottom: 30,
     fontWeight: "bold",
-    color: "#191675",
+    color: variables.$titleColor,
   },
 });
 

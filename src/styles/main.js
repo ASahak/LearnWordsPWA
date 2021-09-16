@@ -1,3 +1,5 @@
+import variables from "@/styles/variables";
+
 export default {
   "@global": {
     "*": {
@@ -15,8 +17,20 @@ export default {
       position: "relative",
       overflow: "hidden",
     },
-
+    ".mosha__toast": {
+      minHeight: 54,
+      padding: "4px 8px",
+    },
+    ".mosha__toast__content__text": {
+      fontSize: "14px",
+      fontWeight: 400,
+      marginBottom: 0,
+    },
+    ".mosha__toast__close-icon:before": {
+      top: 0,
+    },
     ".main_container": {
+      textAlign: "left",
       height: "95vh",
       width: "380px",
       margin: "auto",
@@ -54,8 +68,35 @@ export default {
       opacity: 0,
       transition: "0s",
     },
+    /*Modals styles*/
+    ".modal-container": {
+      zIndex: 22222,
+      position: "relative",
+      background: "#fff",
+      padding: "10px",
+      borderRadius: "4px",
+      boxShadow: "0px 0px 13px -4px #000",
+      minWidth: "250px",
+      maxWidth: "80%",
+    },
+    ".backdrop-wrapper": {
+      width: "90%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      "&:after": {
+        content: "''",
+        position: "absolute",
+        width: "100%",
+        background: "#17171773",
+        height: "100%",
+        left: "0",
+        top: "0",
+        zIndex: "2222",
+      },
+    },
   },
-  inputContainer: {
+  "input-container": {
     transition: "0.2s",
     transitionProperty: "margin-bottom",
     marginBottom: 0,
@@ -93,6 +134,25 @@ export default {
       bottom: "-8px",
       fontSize: 10,
       color: "#ff0000c9",
+    },
+  },
+  "btn-default": {
+    border: "none",
+    padding: "6px 10px",
+    fontSize: "13px",
+    borderRadius: "4px",
+    background: variables.$mainBlueColor,
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "bold",
+    minWidth: "70px",
+    transition: ".2s",
+    "&:disabled": {
+      background: variables.$btnDisableBg,
+      cursor: "default",
+    },
+    "&:hover:enabled": {
+      background: variables.$mainBlueHoverColor,
     },
   },
 };

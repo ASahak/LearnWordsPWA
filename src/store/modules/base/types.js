@@ -1,0 +1,4 @@
+export default {
+  SET_LANGUAGES: "SET_LANGUAGES",
+  SET_GROUPS: "SET_GROUPS",
+};

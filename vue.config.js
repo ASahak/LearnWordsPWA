@@ -1,4 +1,5 @@
 module.exports = {
+  runtimeCompiler: true,
   pwa: {
     name: "Learn Words PWA",
     themeColor: "#4DBA87",
