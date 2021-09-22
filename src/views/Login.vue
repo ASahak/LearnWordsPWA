@@ -1,19 +1,14 @@
 <template>
   <div>
     <NavigationHeader title="Login" />
-    <div :class="classes.entryContainer">
-      <div :class="classes.titleContainer">
+    <div class="entry-container">
+      <div class="title-container">
         <h1>Welcome back</h1>
         <p>Sign in to continue</p>
       </div>
       <form @submit.prevent="onSubmit">
-        <font-awesome-icon icon="user" :class="classes.entryIcon" />
-        <div
-          :class="[
-            gClasses['input-container'],
-            { 'error-field': v$.email.$error },
-          ]"
-        >
+        <font-awesome-icon icon="user" class="entry-icon" />
+        <div :class="['input-container', { 'error-field': v$.email.$error }]">
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
           <input
@@ -28,10 +23,7 @@
         </div>
         <div
           class="input-container"
-          :class="[
-            gClasses['input-container'],
-            { 'error-field': v$.password.$error },
-          ]"
+          :class="['input-container', { 'error-field': v$.password.$error }]"
         >
           <label>Password</label>
           <font-awesome-icon icon="lock" class="input-icon" />
@@ -45,15 +37,13 @@
             {{ v$.password.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Sign In" :class="classes.entryBtn" />
-        <router-link to="/reset-password" :class="classes.entryLinks"
+        <input type="submit" value="Sign In" class="entry-btn" />
+        <router-link to="/reset-password" class="entry-links"
           >Forgot password?</router-link
         >
-        <p :class="classes.dontHaveAccount">
+        <p class="dont-have-account">
           Don't have an account? &nbsp;
-          <router-link to="/register" :class="classes.entryLinks">
-            Sign Up</router-link
-          >
+          <router-link to="/register" class="entry-links"> Sign Up</router-link>
         </p>
       </form>
     </div>
@@ -62,71 +52,9 @@
 <script>
 import { reactive, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { createUseStyles } from "vue-jss";
 import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { useStore, mapActions } from "vuex";
-import variables from "@/styles/variables";
-
-const useStyles = createUseStyles({
-  titleContainer: {
-    marginTop: 50,
-    marginBottom: 50,
-    textAlign: "left",
-    "& p": {
-      fontSize: 12,
-      color: "#888484",
-      margin: 0,
-    },
-    "& h1": {
-      fontSize: 30,
-      fontWeight: "bold",
-      color: variables.$titleColor,
-      margin: 0,
-    },
-  },
-  entryContainer: {
-    padding: "10px 30px",
-  },
-  entryBtn: {
-    cursor: "pointer",
-    background: variables.$mainBlueColor,
-    border: "none",
-    padding: "6px 10px",
-    borderRadius: 4,
-    color: "#fff",
-    fontSize: 14,
-    minWidth: 100,
-    transition: "0.2s",
-    width: "100%",
-    "&:hover": {
-      background: variables.$mainBlueHoverColor,
-    },
-  },
-  entryIcon: {
-    textAlign: "center",
-    fontSize: 50,
-    marginBottom: 30,
-    fontWeight: "bold",
-    color: variables.$titleColor,
-  },
-  dontHaveAccount: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0",
-    fontSize: "13px",
-    color: "#8c8989",
-    lineHeight: "5px",
-  },
-  entryLinks: {
-    textAlign: "center",
-    fontSize: 13,
-    color: "#8c8989",
-    margin: "5px 0",
-    display: "inline-block",
-  },
-});
 
 export default {
   name: "login",
@@ -134,7 +62,6 @@ export default {
     NavigationHeader,
   },
   setup() {
-    const classes = useStyles();
     const store = useStore();
 
     const state = reactive({
@@ -149,7 +76,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { store, state, v$, classes };
+    return { store, state, v$ };
   },
   methods: {
     ...mapActions("auth", ["setUserData"]),
@@ -169,3 +96,67 @@ export default {
   },
 };
 </script>
+<style scoped lang="scss">
+.title-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: left;
+  & p {
+    font-size: 12px;
+    color: #888484;
+    margin: 0;
+  }
+  & h1 {
+    font-size: 30px;
+    font-weight: bold;
+    color: $titleColor;
+    margin: 0;
+  }
+}
+
+.entry-container {
+  padding: 10px 30px;
+}
+
+.entry-btn {
+  cursor: pointer;
+  background: $mainBlueColor;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  min-width: 100px;
+  transition: 0.2s;
+  width: 100%;
+  &:hover {
+    background: $mainBlueHoverColor;
+  }
+}
+
+.entry-icon {
+  text-align: center;
+  font-size: 50px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: $titleColor;
+}
+
+.dont-have-account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: 13px;
+  color: #8c8989;
+  line-height: 5px;
+}
+
+.entry-links {
+  text-align: center;
+  font-size: 13px;
+  color: #8c8989;
+  margin: 5px 0;
+  display: block;
+}
+</style>

@@ -1,19 +1,14 @@
 <template>
   <div>
     <NavigationHeader title="Reset password" />
-    <div :class="classes.entryContainer">
-      <div :class="classes.titleContainer">
+    <div class="entry-container">
+      <div class="title-container">
         <h1>Reset Password</h1>
         <p>Send your email for reset!</p>
       </div>
       <form @submit.prevent="onSubmit">
-        <font-awesome-icon icon="key" :class="classes.entryIcon" />
-        <div
-          :class="[
-            gClasses['input-container'],
-            { 'error-field': v$.email.$error },
-          ]"
-        >
+        <font-awesome-icon icon="key" class="entry-icon" />
+        <div :class="['input-container', { 'error-field': v$.email.$error }]">
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
           <input
@@ -25,7 +20,7 @@
             {{ v$.email.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Send" :class="classes.entryBtn" />
+        <input type="submit" value="Send" class="entry-btn" />
       </form>
     </div>
   </div>
@@ -33,54 +28,8 @@
 <script>
 import { reactive, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
-import { createUseStyles } from "vue-jss";
 import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
-import variables from "@/styles/variables";
-
-const useStyles = createUseStyles({
-  titleContainer: {
-    marginTop: 50,
-    marginBottom: 50,
-    textAlign: "left",
-    "& p": {
-      fontSize: 12,
-      color: "#888484",
-      margin: 0,
-    },
-    "& h1": {
-      fontSize: 30,
-      fontWeight: "bold",
-      color: variables.$titleColor,
-      margin: 0,
-    },
-  },
-  entryContainer: {
-    padding: "10px 30px",
-  },
-  entryBtn: {
-    cursor: "pointer",
-    background: variables.$mainBlueColor,
-    border: "none",
-    padding: "6px 10px",
-    borderRadius: 4,
-    color: "#fff",
-    fontSize: 14,
-    minWidth: 100,
-    transition: "0.2s",
-    width: "100%",
-    "&:hover": {
-      background: variables.$mainBlueHoverColor,
-    },
-  },
-  entryIcon: {
-    textAlign: "center",
-    fontSize: 50,
-    marginBottom: 30,
-    fontWeight: "bold",
-    color: variables.$titleColor,
-  },
-});
 
 export default {
   name: "reset-password",
@@ -88,7 +37,6 @@ export default {
     NavigationHeader,
   },
   setup() {
-    const classes = useStyles();
     const state = reactive({
       email: "",
     });
@@ -99,7 +47,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$, classes };
+    return { state, v$ };
   },
   methods: {
     async onSubmit() {
@@ -112,3 +60,49 @@ export default {
   },
 };
 </script>
+<style scoped lang="scss">
+.title-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: left;
+  & p {
+    font-size: 12px;
+    color: #888484;
+    margin: 0;
+  }
+  & h1 {
+    font-size: 30px;
+    font-weight: bold;
+    color: $titleColor;
+    margin: 0;
+  }
+}
+
+.entry-container {
+  padding: 10px 30px;
+}
+
+.entry-btn {
+  cursor: pointer;
+  background: $mainBlueColor;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  min-width: 100px;
+  transition: 0.2s;
+  width: 100%;
+  &:hover {
+    background: $mainBlueHoverColor;
+  }
+}
+
+.entry-icon {
+  text-align: center;
+  font-size: 50px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: $titleColor;
+}
+</style>

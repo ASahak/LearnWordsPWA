@@ -1,5 +1,14 @@
 module.exports = {
   runtimeCompiler: true,
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `
+          @import "@/styles/_variables.scss";
+        `,
+      },
+    },
+  },
   pwa: {
     name: "Learn Words PWA",
     themeColor: "#4DBA87",

@@ -1,29 +1,12 @@
 <script>
 import { h, computed } from "vue";
 import { useStore } from "vuex";
-import { createUseStyles } from "vue-jss";
 import EmitterBus from "@/utils/eventBus";
-
-const useStyles = createUseStyles({
-  "user-fullName--panel": {
-    cursor: "pointer",
-    background: "#615555",
-    borderRadius: "50%",
-    color: "#fff",
-    fontSize: "14px",
-    height: 32,
-    width: 32,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default {
   name: "user-panel",
   setup() {
     const store = useStore();
-    const classes = useStyles();
     const getUserName = computed(() => {
       return (
         store.state.auth?.user?.displayName
@@ -37,7 +20,7 @@ export default {
       h(
         "div",
         {
-          className: classes.value["user-fullName--panel"],
+          className: "user-fullName--panel",
           onClick: () => EmitterBus.$emit("toggle-modal", "user-details-modal"),
         },
         getUserName.value
@@ -45,3 +28,17 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.user-fullName--panel {
+  cursor: pointer;
+  background: #615555;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 14px;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

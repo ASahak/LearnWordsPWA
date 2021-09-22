@@ -28,6 +28,7 @@ import { useStore } from "vuex";
 import NativePanel from "@/shared/NativeOptionsTopPanel";
 import Modals from "@/shared/Modals";
 import EmitterBus from "@/utils/eventBus";
+import "@/styles/main.scss";
 
 export default {
   components: {

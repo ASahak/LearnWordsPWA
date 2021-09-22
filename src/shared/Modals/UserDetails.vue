@@ -2,16 +2,11 @@
   <div class="backdrop-wrapper">
     <div class="modal-container">
       <div v-if="state.modalContent === 'main'">
-        <h3 :class="classes.title">{{ userDetains?.displayName }}</h3>
-        <p :class="classes.paragraphs" @click="goToAddLang">Add language</p>
-        <p :class="classes.paragraphs" v-if="languages.length > 1">
-          Switch language
-        </p>
-        <p :class="classes.paragraphs" @click="logOut">Log out</p>
-        <button
-          :class="[gClasses['btn-default'], classes['modal-btn']]"
-          @click="closeDialog"
-        >
+        <h3 class="title">{{ userDetains?.displayName }}</h3>
+        <p class="paragraphs" @click="goToAddLang">Add language</p>
+        <p class="paragraphs" v-if="languages.length > 1">Switch language</p>
+        <p class="paragraphs" @click="logOut">Log out</p>
+        <button class="btn-default modal-btn" @click="closeDialog">
           Close
         </button>
       </div>
@@ -19,14 +14,14 @@
         <font-awesome-icon
           icon="arrow-left"
           @click="goToMain"
-          :class="classes['back-btn']"
+          class="back-btn"
         />
         <p v-if="!userLangsForAdding">No Languages</p>
-        <div v-else :class="classes['languages-list']">
+        <div v-else class="languages-list">
           <label
             v-for="lang in userLangsForAdding"
             :key="lang.value"
-            :class="classes['languages-list__item']"
+            class="languages-list__item"
           >
             <input
               type="radio"
@@ -34,11 +29,11 @@
               :checked="state.checkedLang === lang.value"
               @change="setLanguage(lang.value)"
             />
-            <p :class="classes.paragraphs">{{ lang.title }}</p>
+            <p class="paragraphs">{{ lang.title }}</p>
           </label>
           <button
             :disabled="!state.checkedLang"
-            :class="[gClasses['btn-default'], classes['modal-btn']]"
+            class="btn-default modal-btn"
             @click="addLanguage"
           >
             Add
@@ -52,43 +47,8 @@
 import { computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { createUseStyles } from "vue-jss";
 import EmitterBus from "@/utils/eventBus";
 import { LANGUAGES } from "@/utils/constants";
-
-const useStyles = createUseStyles({
-  title: {
-    textAlign: "left",
-    marginTop: 10,
-  },
-  paragraphs: {
-    textAlign: "left",
-    cursor: "pointer",
-    margin: "8px 0",
-  },
-  "back-btn": {
-    cursor: "pointer",
-  },
-  "modal-btn": {
-    marginLeft: "auto",
-    display: "block",
-  },
-  "languages-list": {
-    paddingTop: 10,
-    "& p": {
-      margin: "5px 10px",
-    },
-  },
-  "languages-list__item": {
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
-    "& input": {
-      cursor: "pointer",
-      margin: 0,
-    },
-  },
-});
 
 export default {
   name: "user-details-modal",
@@ -99,7 +59,6 @@ export default {
     });
 
     const store = useStore();
-    const classes = useStyles();
     const router = useRouter();
 
     const userDetains = computed(() => {
@@ -153,7 +112,6 @@ export default {
       userDetains,
       userLangsForAdding,
       languages,
-      classes,
       logOut,
       goToAddLang,
       goToMain,
@@ -164,3 +122,41 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.title {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.paragraphs {
+  text-align: left;
+  cursor: pointer;
+  margin: 8px 0;
+}
+
+.back-btn {
+  cursor: pointer;
+}
+
+.modal-btn {
+  margin-left: auto;
+  display: block;
+}
+
+.languages-list {
+  padding-top: 10px;
+  & p {
+    margin: 5px 10px;
+  }
+}
+
+.languages-list__item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & input {
+    cursor: pointer;
+    margin: 0;
+  }
+}
+</style>
