@@ -1,8 +1,11 @@
 import {
   getAuth,
+  updateProfile,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import * as firestore from "firebase/firestore";
 import { createToast } from "mosha-vue-toastify";
@@ -32,31 +35,32 @@ export default class Firebase {
     return await signOut(auth);
   }
 
-  // static async registerUser(email, password, name) {
-  //   try {
-  //     const userCredential = await auth().createUserWithEmailAndPassword(
-  //       email,
-  //       password
-  //     );
-  //     const ref = firestore().collection("users");
-  //     await ref.doc(userCredential.user.uid).set({
-  //       languages: ["en"],
-  //       words: { en: [] },
-  //     });
-  //     await userCredential.user.updateProfile({
-  //       displayName: name,
-  //     });
-  //     return {
-  //       type: "success",
-  //       msg: "User registered!",
-  //     };
-  //   } catch (err) {
-  //     return {
-  //       type: "error",
-  //       msg: err.message,
-  //     };
-  //   }
-  // }
+  static async registerUser({ email, password, username }) {
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const { getFirestore, doc, getDoc, setDoc } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userCredential.user.uid);
+      const userSnap = await getDoc(usersRef);
+      if (!userSnap.exists()) {
+        await setDoc(usersRef, {
+          languages: ["en"],
+          words: { en: [] },
+        });
+        await updateProfile(auth.currentUser, {
+          displayName: username,
+        });
+      }
+      return { msg: "User registered!" };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
 
   static async loginUser({ email, password }) {
     try {
@@ -77,10 +81,17 @@ export default class Firebase {
     }
   }
 
-  // static passwordReset(email) {
-  //   return auth().sendPasswordResetEmail(email);
-  // }
-  //
+  static async passwordReset(email) {
+    try {
+      const auth = getAuth();
+      console.log(email);
+      await sendPasswordResetEmail(auth, email);
+      return { msg: "Check your email." };
+    } catch (err) {
+      return { error: err };
+    }
+  }
+
   static async getLanguages(userId) {
     try {
       const { getFirestore, doc, getDoc } = firestore;

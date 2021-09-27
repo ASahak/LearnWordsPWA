@@ -12,6 +12,7 @@
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
           <input
+            name="email"
             type="email"
             placeholder="Type your email"
             v-model="state.email"
@@ -27,8 +28,10 @@
 </template>
 <script>
 import { reactive, computed } from "vue";
+import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
+import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
 
 export default {
@@ -37,6 +40,8 @@ export default {
     NavigationHeader,
   },
   setup() {
+    const store = useStore();
+
     const state = reactive({
       email: "",
     });
@@ -47,14 +52,31 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$ };
+    return { state, v$, store };
   },
   methods: {
     async onSubmit() {
       try {
-        await this.v$.$validate();
+        const isValid = await this.v$.$validate();
+        if (!isValid) return;
+        const { dispatch } = this.store;
+        const { msg, error } = await dispatch("auth/resetPassword", {
+          email: this.state.email,
+        });
+        if (error) throw error;
+        this.state.email = "";
+        await this.$nextTick(() => {
+          this.v$.$reset();
+        });
+        createToast(msg, {
+          type: "default",
+          hideProgressBar: true,
+        });
       } catch (err) {
-        console.error(err);
+        createToast(err.message, {
+          type: "danger",
+          hideProgressBar: true,
+        });
       }
     },
   },

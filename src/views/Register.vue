@@ -11,8 +11,9 @@
           :class="['input-container', { 'error-field': v$.username.$error }]"
         >
           <label>Username</label>
-          <font-awesome-icon icon="at" class="input-icon" />
+          <font-awesome-icon icon="user-alt" class="input-icon" />
           <input
+            name="name"
             type="text"
             placeholder="Type your username"
             v-model="state.username"
@@ -25,6 +26,7 @@
           <label>E-mail</label>
           <font-awesome-icon icon="at" class="input-icon" />
           <input
+            name="email"
             type="email"
             placeholder="Type your email"
             v-model="state.email"
@@ -75,9 +77,11 @@
 </template>
 <script>
 import { reactive, computed } from "vue";
+import { mapActions } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { required, email, sameAs, minLength } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
+import { createToast } from "mosha-vue-toastify";
 
 export default {
   name: "register",
@@ -104,11 +108,30 @@ export default {
     return { state, v$ };
   },
   methods: {
+    ...mapActions("auth", ["registerUser", "setUserData"]),
     async onSubmit() {
       try {
-        await this.v$.$validate();
+        const isValid = await this.v$.$validate();
+        if (!isValid) return;
+        const { msg, error } = await this["registerUser"]({
+          username: this.state.username,
+          email: this.state.email,
+          password: this.state.password,
+        });
+        if (error) throw error;
+
+        await this.$router.push("/");
+        createToast(msg, {
+          type: "default",
+          hideProgressBar: true,
+        });
+        this["setUserData"]({});
       } catch (err) {
         console.error(err);
+        createToast(err.message, {
+          type: "error",
+          hideProgressBar: true,
+        });
       }
     },
   },

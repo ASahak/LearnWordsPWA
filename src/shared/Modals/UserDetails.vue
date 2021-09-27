@@ -23,13 +23,15 @@
             :key="lang.value"
             class="languages-list__item"
           >
-            <input
-              type="radio"
-              name="language"
-              :checked="state.checkedLang === lang.value"
-              @change="setLanguage(lang.value)"
-            />
-            <p class="paragraphs">{{ lang.title }}</p>
+            <template v-if="currentLang !== lang">
+              <input
+                type="radio"
+                name="language"
+                :checked="state.checkedLang === lang.value"
+                @change="setLanguage(lang.value)"
+              />
+              <p class="paragraphs">{{ lang.title }}</p>
+            </template>
           </label>
           <button
             :disabled="!state.checkedLang"
@@ -48,21 +50,25 @@ import { computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import EmitterBus from "@/utils/eventBus";
-import { LANGUAGES } from "@/utils/constants";
+import { LANG, LANGUAGES } from "@/utils/constants";
 
 export default {
   name: "user-details-modal",
   setup() {
+    const store = useStore();
     const state = reactive({
       modalContent: "main",
       checkedLang: null,
     });
 
-    const store = useStore();
     const router = useRouter();
 
     const userDetains = computed(() => {
       return store.state.auth?.user;
+    });
+
+    const currentLang = computed(() => {
+      return store.state.base?.lang || LANG;
     });
 
     const userLangsForAdding = computed(() => {
@@ -112,6 +118,7 @@ export default {
       userDetains,
       userLangsForAdding,
       languages,
+      currentLang,
       logOut,
       goToAddLang,
       goToMain,

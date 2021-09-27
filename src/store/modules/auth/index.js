@@ -41,5 +41,25 @@ export default {
         console.error(err);
       }
     },
+    async registerUser(_ctx, payload) {
+      try {
+        const { email, password, username } = payload;
+        return await Firebase.registerUser({
+          email,
+          password,
+          username,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    async resetPassword(_ctx, payload) {
+      try {
+        const { email } = payload;
+        return await Firebase.passwordReset(email);
+      } catch (err) {
+        console.error(err);
+      }
+    },
   },
 };

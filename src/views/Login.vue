@@ -51,10 +51,10 @@
 </template>
 <script>
 import { reactive, computed } from "vue";
+import { useStore, mapActions } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
-import { useStore, mapActions } from "vuex";
 
 export default {
   name: "login",
@@ -88,6 +88,7 @@ export default {
           email: this.state.email,
           password: this.state.password,
         });
+        this.v$.$reset();
         await this.$router.push("/");
       } catch (err) {
         console.error(err);
