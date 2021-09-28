@@ -6,6 +6,8 @@ import store from "./store";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import moshaToast from "mosha-vue-toastify";
+import Indicator from "vue3-loading-overlay";
+import "vue3-loading-overlay/dist/vue3-loading-overlay.css";
 import "mosha-vue-toastify/dist/style.css";
 import {
   faAt,
@@ -35,6 +37,7 @@ import * as firebase from "firebase/app";
 
   app
     .use(moshaToast)
+    .use(Indicator)
     .use(store)
     .use(router)
     .component("font-awesome-icon", FontAwesomeIcon);

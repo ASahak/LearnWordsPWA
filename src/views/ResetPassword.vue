@@ -21,15 +21,22 @@
             {{ v$.email.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Send" class="entry-btn" />
+        <div ref="indicatorRef" class="indicator-container">
+          <input
+            type="submit"
+            :value="!state.isLoading ? 'Send' : ''"
+            class="entry-btn"
+          />
+        </div>
       </form>
     </div>
   </div>
 </template>
 <script>
-import { reactive, computed } from "vue";
+import { reactive, computed, ref, watchEffect } from "vue";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
+import { useLoading } from "vue3-loading-overlay";
 import { required, email } from "@vuelidate/validators";
 import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
@@ -40,10 +47,25 @@ export default {
     NavigationHeader,
   },
   setup() {
+    const indicatorRef = ref(null);
+    let loader = useLoading();
+
     const store = useStore();
 
     const state = reactive({
       email: "",
+      isLoading: false,
+    });
+
+    watchEffect(() => {
+      if (state.isLoading) {
+        loader.show({
+          container: indicatorRef.value,
+          height: 18,
+          width: 18,
+          color: "#191675",
+        });
+      } else loader.hide();
     });
 
     const rules = computed(() => ({
@@ -52,7 +74,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$, store };
+    return { state, v$, store, indicatorRef };
   },
   methods: {
     async onSubmit() {
@@ -60,12 +82,14 @@ export default {
         const isValid = await this.v$.$validate();
         if (!isValid) return;
         const { dispatch } = this.store;
+        this.state.isLoading = true;
         const { msg, error } = await dispatch("auth/resetPassword", {
           email: this.state.email,
         });
         if (error) throw error;
         this.state.email = "";
         await this.$nextTick(() => {
+          this.state.isLoading = false;
           this.v$.$reset();
         });
         createToast(msg, {
@@ -105,26 +129,10 @@ export default {
 }
 
 .entry-btn {
-  cursor: pointer;
-  background: $mainBlueColor;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
-  min-width: 100px;
-  transition: 0.2s;
-  width: 100%;
-  &:hover {
-    background: $mainBlueHoverColor;
-  }
+  @extend .btn-submit_extend;
 }
 
 .entry-icon {
-  text-align: center;
-  font-size: 50px;
-  margin-bottom: 30px;
-  font-weight: bold;
-  color: $titleColor;
+  @extend .entry-icon_extend;
 }
 </style>

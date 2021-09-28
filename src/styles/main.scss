@@ -12,6 +12,14 @@
   color: #2c3e50;
 }
 
+.indicator-container {
+  position: relative;
+}
+
+.indicator-container .vld-icon {
+  display: flex;
+}
+
 .section-transition--wrapper {
   z-index: 222;
   position: relative;

@@ -66,7 +66,13 @@
             {{ v$.confirm_password.$errors[0].$message }}
           </p>
         </div>
-        <input type="submit" value="Sign Up" class="entry-btn" />
+        <div ref="indicatorRef" class="indicator-container">
+          <input
+            type="submit"
+            :value="!state.isLoading ? 'Sign Up' : ''"
+            class="entry-btn"
+          />
+        </div>
         <p class="dont-have-account">
           Have an account? &nbsp;
           <router-link to="/login" class="entry-links"> Sign In</router-link>
@@ -76,8 +82,9 @@
   </div>
 </template>
 <script>
-import { reactive, computed } from "vue";
+import { reactive, computed, ref, watchEffect } from "vue";
 import { mapActions } from "vuex";
+import { useLoading } from "vue3-loading-overlay";
 import useVuelidate from "@vuelidate/core";
 import { required, email, sameAs, minLength } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
@@ -89,11 +96,26 @@ export default {
     NavigationHeader,
   },
   setup() {
+    const indicatorRef = ref(null);
+    let loader = useLoading();
+
     const state = reactive({
       username: "",
       email: "",
       password: "",
       confirm_password: "",
+      isLoading: false,
+    });
+
+    watchEffect(() => {
+      if (state.isLoading) {
+        loader.show({
+          container: indicatorRef.value,
+          height: 18,
+          width: 18,
+          color: "#191675",
+        });
+      } else loader.hide();
     });
 
     const rules = computed(() => ({
@@ -105,7 +127,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$ };
+    return { state, v$, indicatorRef };
   },
   methods: {
     ...mapActions("auth", ["registerUser", "setUserData"]),
@@ -113,13 +135,14 @@ export default {
       try {
         const isValid = await this.v$.$validate();
         if (!isValid) return;
+        this.state.isLoading = true;
         const { msg, error } = await this["registerUser"]({
           username: this.state.username,
           email: this.state.email,
           password: this.state.password,
         });
         if (error) throw error;
-
+        this.state.isLoading = false;
         await this.$router.push("/");
         createToast(msg, {
           type: "default",
@@ -160,44 +183,19 @@ export default {
 }
 
 .entry-btn {
-  cursor: pointer;
-  background: $mainBlueColor;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
-  min-width: 100px;
-  transition: 0.2s;
-  width: 100%;
-  &:hover {
-    background: $mainBlueHoverColor;
-  }
+  @extend .btn-submit_extend;
 }
 
 .entry-icon {
-  text-align: center;
-  font-size: 50px;
-  margin-bottom: 30px;
-  font-weight: bold;
-  color: $titleColor;
+  @extend .entry-icon_extend;
 }
 
 .dont-have-account {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @extend .dont-have-account_extend;
   margin: 5px 0 0;
-  font-size: 13px;
-  color: #8c8989;
-  line-height: 5px;
 }
 
 .entry-links {
-  text-align: center;
-  font-size: 13px;
-  color: #8c8989;
-  margin: 5px 0;
-  display: inline-block;
+  @extend .entry-link_extend;
 }
 </style>
