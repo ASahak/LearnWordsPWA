@@ -3,32 +3,39 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
+import AddWord from "../views/AddWord.vue";
 import Firebase from "@/services/Firebase";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
     component: Home,
     meta: { requiresAuth: true },
   },
   {
     path: "/register",
-    name: "Register",
+    name: "register",
     component: Register,
     meta: { ifLoggedRedirectToHome: true },
   },
   {
     path: "/reset-password",
-    name: "ResetPassword",
+    name: "reset-password",
     component: ResetPassword,
     meta: { ifLoggedRedirectToHome: true },
   },
   {
     path: "/login",
-    name: "Login",
+    name: "login",
     component: Login,
     meta: { ifLoggedRedirectToHome: true },
+  },
+  {
+    path: "/add-word",
+    name: "add-word",
+    component: AddWord,
+    meta: { requiresAuth: true },
   },
 ];
 

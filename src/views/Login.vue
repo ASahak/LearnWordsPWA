@@ -122,20 +122,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .title-container {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  text-align: left;
-  & p {
-    font-size: 12px;
-    color: #888484;
-    margin: 0;
-  }
-  & h1 {
-    font-size: 30px;
-    font-weight: bold;
-    color: $titleColor;
-    margin: 0;
-  }
+  @extend .title-entry-container_extend;
 }
 
 .entry-container {

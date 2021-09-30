@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import * as firestore from "firebase/firestore";
+// import { runTransaction } from "firebase/firestore";
 import { createToast } from "mosha-vue-toastify";
 // import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 // import firestore from "firebase/firestore";
@@ -84,7 +85,6 @@ export default class Firebase {
   static async passwordReset(email) {
     try {
       const auth = getAuth();
-      console.log(email);
       await sendPasswordResetEmail(auth, email);
       return { msg: "Check your email." };
     } catch (err) {
@@ -109,25 +109,29 @@ export default class Firebase {
       return { error: err.message };
     }
   }
-  //
-  // static async addLanguage(userId, lang) {
-  //   try {
-  //     const docRef = firebase.firestore().collection("users").doc(userId);
-  //     return await firebase.firestore().runTransaction((transaction) => {
-  //       return transaction.get(docRef).then((snapshot) => {
-  //         const largerArray = snapshot.get("languages");
-  //         const wordsObj = snapshot.get("words");
-  //         largerArray?.push(lang);
-  //         wordsObj[lang] = [];
-  //         transaction.update(docRef, "languages", largerArray);
-  //         transaction.update(docRef, "words", wordsObj);
-  //       });
-  //     });
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
-  //
+
+  static async addLanguage({ userId, lang }) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      let langs = null;
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.data()?.languages?.indexOf(lang) === -1) {
+          const baseData = { ...userSnap.data() };
+          baseData.languages.push(lang);
+          baseData.words[lang] = [];
+          await t.update(usersRef, baseData);
+          langs = baseData.languages;
+        }
+      });
+      return { data: langs };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
   // static async getList(userId, lang, filters) {
   //   try {
   //     const wordsData = await firebase

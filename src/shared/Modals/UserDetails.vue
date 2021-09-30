@@ -2,14 +2,23 @@
   <div class="backdrop-wrapper">
     <div class="modal-container">
       <div v-if="state.modalContent === 'main'">
-        <h3 class="title">{{ userDetains?.displayName }}</h3>
-        <p class="paragraphs" @click="goToAddLang">Add language</p>
-        <p class="paragraphs" v-if="languages.length > 1">Switch language</p>
+        <h3 class="title">{{ userDetails?.displayName }}</h3>
+        <p class="paragraphs" @click="goToLangContent('add-language')">
+          Add language
+        </p>
+        <p
+          class="paragraphs"
+          v-if="languages.length > 1"
+          @click="goToLangContent('switch-language')"
+        >
+          Switch language
+        </p>
         <p class="paragraphs" @click="logOut">Log out</p>
         <button class="btn-default modal-btn" @click="closeDialog">
           Close
         </button>
       </div>
+      <!-- ADD LANGUAGE CONTENT      -->
       <div v-else-if="state.modalContent === 'add-language'">
         <font-awesome-icon
           icon="arrow-left"
@@ -23,7 +32,7 @@
             :key="lang.value"
             class="languages-list__item"
           >
-            <template v-if="currentLang !== lang">
+            <template v-if="currentLang !== lang.value">
               <input
                 type="radio"
                 name="language"
@@ -33,37 +42,91 @@
               <p class="paragraphs">{{ lang.title }}</p>
             </template>
           </label>
-          <button
-            :disabled="!state.checkedLang"
-            class="btn-default modal-btn"
-            @click="addLanguage"
+          <div ref="indicatorRef" class="indicator-container">
+            <button
+              :disabled="!state.checkedLang"
+              class="btn-default modal-btn"
+              @click="addLanguage"
+            >
+              {{ !state.isLoading ? "Add" : "" }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- SWITCH LANGUAGE CONTENT      -->
+      <div v-else-if="state.modalContent === 'switch-language'">
+        <font-awesome-icon
+          icon="arrow-left"
+          @click="goToMain"
+          class="back-btn"
+        />
+        <div class="languages-list">
+          <label
+            v-for="lang in userLangsForSwitching"
+            :key="lang.value"
+            class="languages-list__item"
           >
-            Add
-          </button>
+            <input
+              type="radio"
+              name="language"
+              :checked="currentLang === lang.value"
+              @change="setLanguage(lang.value)"
+            />
+            <p class="paragraphs">{{ lang.title }}</p>
+          </label>
+          <div ref="indicatorRef" class="indicator-container">
+            <button
+              :disabled="
+                !state.checkedLang || currentLang === state.checkedLang
+              "
+              class="btn-default modal-btn"
+              @click="switchLanguage"
+            >
+              {{ !state.isLoading ? "Switch" : "" }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import { useStore } from "vuex";
+import { useLoading } from "vue3-loading-overlay";
 import { useRouter } from "vue-router";
 import EmitterBus from "@/utils/eventBus";
 import { LANG, LANGUAGES } from "@/utils/constants";
+import Types from "@/store/modules/base/types";
 
 export default {
   name: "user-details-modal",
   setup() {
     const store = useStore();
+    const { dispatch, commit } = store;
+    let loader = useLoading();
+    const indicatorRef = ref(null);
+
     const state = reactive({
       modalContent: "main",
       checkedLang: null,
+      isLoading: false,
     });
 
     const router = useRouter();
 
-    const userDetains = computed(() => {
+    watchEffect(() => {
+      if (state.isLoading) {
+        loader.show({
+          container: indicatorRef.value,
+          height: 18,
+          width: 18,
+          color: "#191675",
+        });
+      } else loader.hide();
+    });
+
+    const userDetails = computed(() => {
       return store.state.auth?.user;
     });
 
@@ -72,18 +135,30 @@ export default {
     });
 
     const userLangsForAdding = computed(() => {
-      if (!store.state.base?.languages) return null;
-      return Object.keys(LANGUAGES).reduce((acc, item) => {
-        if (store.state.base.languages.indexOf(item) === -1) {
-          acc.push({ value: item, title: LANGUAGES[item] });
-        }
-        return acc;
-      }, []);
+      return getMutatedLangs("add");
+    });
+
+    const userLangsForSwitching = computed(() => {
+      return getMutatedLangs("switch");
     });
 
     const languages = computed(() => {
       return store.state.base?.languages;
     });
+
+    const getMutatedLangs = (type) => {
+      if (!store.state.base?.languages) return null;
+      return Object.keys(LANGUAGES).reduce((acc, item) => {
+        if (
+          type === "switch"
+            ? store.state.base.languages.indexOf(item) > -1
+            : store.state.base.languages.indexOf(item) === -1
+        ) {
+          acc.push({ value: item, title: LANGUAGES[item] });
+        }
+        return acc;
+      }, []);
+    };
 
     const logOut = () => {
       const { dispatch } = store;
@@ -93,16 +168,30 @@ export default {
       });
     };
 
-    const goToAddLang = () => {
-      state.modalContent = "add-language";
+    const goToLangContent = (contentType) => {
+      state.modalContent = contentType;
     };
 
     const goToMain = () => {
+      state.checkedLang = null;
       state.modalContent = "main";
     };
 
+    const switchLanguage = () => {
+      commit("base/" + Types.SWITCH_LANGUAGE, state.checkedLang);
+      state.modalContent = "main";
+      closeDialog();
+    };
+
     const addLanguage = () => {
-      console.log("addLanguage");
+      state.isLoading = true;
+      dispatch("base/addLanguage", {
+        lang: state.checkedLang,
+        cb: () => {
+          state.isLoading = false;
+          state.modalContent = "main";
+        },
+      });
     };
 
     const setLanguage = (v) => {
@@ -115,14 +204,17 @@ export default {
 
     return {
       state,
-      userDetains,
+      userDetails,
       userLangsForAdding,
+      userLangsForSwitching,
       languages,
       currentLang,
+      indicatorRef,
       logOut,
-      goToAddLang,
+      goToLangContent,
       goToMain,
       addLanguage,
+      switchLanguage,
       setLanguage,
       closeDialog,
     };
@@ -148,6 +240,12 @@ export default {
 .modal-btn {
   margin-left: auto;
   display: block;
+  height: 28px;
+}
+
+.indicator-container {
+  display: inline-block;
+  float: right;
 }
 
 .languages-list {

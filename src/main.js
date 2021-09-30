@@ -11,6 +11,7 @@ import "vue3-loading-overlay/dist/vue3-loading-overlay.css";
 import "mosha-vue-toastify/dist/style.css";
 import {
   faAt,
+  faBook,
   faUser,
   faLock,
   faKey,
@@ -20,7 +21,7 @@ import {
 import * as firebase from "firebase/app";
 
 (async () => {
-  library.add(faUserAlt, faAt, faUser, faLock, faKey, faArrowLeft);
+  library.add(faUserAlt, faAt, faUser, faLock, faKey, faArrowLeft, faBook);
 
   const firebaseConfig = {
     apiKey: "AIzaSyByB2wX-YiwV2vBoxS_T4uasWUVmXE4ZbM",

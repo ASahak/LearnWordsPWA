@@ -16,8 +16,24 @@ export default {
     [Types.SET_GROUPS](state, payload) {
       state.groups = payload;
     },
+    [Types.SWITCH_LANGUAGE](state, payload) {
+      state.lang = payload;
+    },
   },
   actions: {
+    async addLanguage({ commit, rootState }, payload) {
+      try {
+        const { data, error } = await Firebase.addLanguage({
+          userId: rootState.auth.user.uid,
+          lang: payload.lang,
+        });
+        if (error) throw error;
+        commit(Types.SET_LANGUAGES, data);
+        payload.cb();
+      } catch (err) {
+        console.error(err);
+      }
+    },
     async setLanguages({ commit }, payloadId) {
       try {
         const { data, error } = await Firebase.getLanguages(payloadId);
