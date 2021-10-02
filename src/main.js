@@ -14,14 +14,26 @@ import {
   faBook,
   faUser,
   faLock,
+  faObjectGroup,
   faKey,
+  faFileWord,
   faArrowLeft,
   faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import * as firebase from "firebase/app";
 
 (async () => {
-  library.add(faUserAlt, faAt, faUser, faLock, faKey, faArrowLeft, faBook);
+  library.add(
+    faObjectGroup,
+    faFileWord,
+    faUserAlt,
+    faAt,
+    faUser,
+    faLock,
+    faKey,
+    faArrowLeft,
+    faBook
+  );
 
   const firebaseConfig = {
     apiKey: "AIzaSyByB2wX-YiwV2vBoxS_T4uasWUVmXE4ZbM",

@@ -6,7 +6,7 @@
       @before-enter="beforeEnter"
       @after-leave="afterLeave"
     >
-      <component :is="ModalComponent" />
+      <component :is="ModalComponent" v-bind="props" />
     </transition>
   </div>
 </template>
@@ -15,28 +15,33 @@ import { onMounted, ref } from "vue";
 import EmitterBus from "@/utils/eventBus";
 import UserDetailsModal from "@/shared/Modals/UserDetails";
 import FilterByModal from "@/shared/Modals/FilterByModal";
+import GroupsModal from "@/shared/Modals/GroupsModal";
 
 export default {
   name: "modals",
   components: {
     "user-details-modal": UserDetailsModal,
     "filter-by-modal": FilterByModal,
+    "groups-modal": GroupsModal,
   },
   emits: ["toggle-modal-bg-image"],
   setup(_props, context) {
     const ModalComponent = ref(null);
+    const props = ref(null);
 
     const beforeEnter = () => context.emit("toggle-modal-bg-image", true);
 
     const afterLeave = () => context.emit("toggle-modal-bg-image", false);
 
     onMounted(() => {
-      EmitterBus.$on("toggle-modal", (v) => {
+      EmitterBus.$on("toggle-modal", (v, data) => {
         ModalComponent.value = v;
+        props.value = data || {};
       });
     });
 
     return {
+      props,
       ModalComponent,
       beforeEnter,
       afterLeave,

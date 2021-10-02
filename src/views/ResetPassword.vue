@@ -97,7 +97,7 @@ export default {
           hideProgressBar: true,
         });
       } catch (err) {
-        createToast(err.message, {
+        createToast(err.message || err, {
           type: "danger",
           hideProgressBar: true,
         });

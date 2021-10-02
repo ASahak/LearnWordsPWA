@@ -59,3 +59,37 @@
     margin: 0;
   }
 }
+
+.input-container_extend {
+  transition: 0.2s;
+  transition-property: margin-bottom;
+  margin-bottom: 0;
+  padding: 16px 0;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+  display: flex;
+  & > label {
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+  }
+  & .input-icon {
+    position: absolute;
+    left: 0;
+    font-size: 17px;
+    color: #ccc;
+  }
+  &.error-field {
+    margin-bottom: 10px;
+  }
+  &.error-field input {
+    border-bottom: 2px solid #ff0000c9;
+  }
+  &.error-field .error-msg {
+    position: absolute;
+    bottom: -8px;
+    font-size: 10px;
+    color: #ff0000c9;
+  }
+}

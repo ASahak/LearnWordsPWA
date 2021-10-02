@@ -27,18 +27,18 @@
 }
 
 .mosha__toast {
-  min-height: 54px;
-  padding: 4px 8px;
+  min-height: 54px !important;
+  padding: 4px 8px !important;
 }
 
 .mosha__toast__content__text {
-  font-size: 14px;
-  font-weight: 400;
-  margin-bottom: 0;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  margin-bottom: 0 !important;
 }
 
 .mosha__toast__close-icon:before {
-  top: 0;
+  top: 0 !important;
 }
 
 .main_container {
@@ -86,43 +86,14 @@
 }
 
 .input-container {
-  transition: 0.2s;
-  transition-property: margin-bottom;
-  margin-bottom: 0;
-  padding: 16px 0;
-  flex-direction: row;
-  position: relative;
-  align-items: center;
-  display: flex;
-  & > label {
-    font-size: 12px;
-    position: absolute;
-    top: 0;
-  }
+  @extend .input-container_extend;
   & > input {
     border: none;
     border-bottom: 2px solid #3333;
     width: 100%;
     outline: none;
+    font-size: 13px;
     padding: 8px 8px 8px 30px;
-  }
-  & .input-icon {
-    position: absolute;
-    left: 0;
-    font-size: 17px;
-    color: #ccc;
-  }
-  &.error-field {
-    margin-bottom: 10px;
-  }
-  &.error-field input {
-    border-bottom: 2px solid #ff0000c9;
-  }
-  &.error-field .error-msg {
-    position: absolute;
-    bottom: -8px;
-    font-size: 10px;
-    color: #ff0000c9;
   }
 }
 

@@ -59,7 +59,7 @@ export default class Firebase {
       }
       return { msg: "User registered!" };
     } catch (err) {
-      return { error: err.message };
+      return { error: err };
     }
   }
 
@@ -74,7 +74,7 @@ export default class Firebase {
       const { displayName, uid } = userCredential?.user;
       return { displayName, uid };
     } catch (err) {
-      createToast(err.message, {
+      createToast(err.message || err, {
         type: "danger",
         hideProgressBar: true,
       });
@@ -106,7 +106,7 @@ export default class Firebase {
         throw "No such document!";
       }
     } catch (err) {
-      return { error: err.message };
+      return { error: err };
     }
   }
 
@@ -128,7 +128,7 @@ export default class Firebase {
       });
       return { data: langs };
     } catch (err) {
-      return { error: err.message };
+      return { error: err };
     }
   }
 
@@ -205,23 +205,25 @@ export default class Firebase {
   //   }
   // }
   //
-  // static async checkExistingWord(lang, word1, userId) {
-  //   try {
-  //     const words = await firebase
-  //       .firestore()
-  //       .collection("users")
-  //       .doc(userId)
-  //       .get();
-  //     const wordsList = words.data()?.words?.[lang] || [];
-  //     if (wordsList.length) {
-  //       if (wordsList.some((e) => e[lang] === word1)) {
-  //         return { error: "This word already exist!" };
-  //       }
-  //     }
-  //   } catch (err) {
-  //     return { error: err };
-  //   }
-  // }
+  static async checkExistingWord(lang, word1, userId) {
+    try {
+      const { getFirestore, doc, getDoc } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      const userSnap = await getDoc(usersRef);
+      if (userSnap.exists()) {
+        const wordsList = userSnap.data().words[lang] || [];
+        if (wordsList.length) {
+          if (wordsList.some((e) => e[lang] === word1)) {
+            throw "This word already exist!";
+          }
+        }
+      }
+      return 1;
+    } catch (err) {
+      return { error: err };
+    }
+  }
   //
   // static async addGroup(lng, groupName, userId) {
   //   try {
@@ -265,7 +267,7 @@ export default class Firebase {
         throw "No such document!";
       }
     } catch (err) {
-      return { error: err.message };
+      return { error: err };
     }
   }
   //
@@ -325,24 +327,28 @@ export default class Firebase {
   //   }
   // }
   //
-  // static async addWord(lang, word1, word2, userId, groupName) {
-  //   try {
-  //     const docRef = firebase.firestore().collection("users").doc(userId);
-  //     return await firebase.firestore().runTransaction((transaction) => {
-  //       return transaction.get(docRef).then((snapshot) => {
-  //         const largerArray = snapshot.get("words");
-  //         largerArray?.[lang]?.push({
-  //           isLearned: false,
-  //           publication: new Date().getTime(),
-  //           [lang]: word1,
-  //           groupName,
-  //           arm: word2,
-  //         });
-  //         transaction.update(docRef, "words", largerArray);
-  //       });
-  //     });
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
+  static async addWord(lang, word1, word2, userId, groupName) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      const addedData = {
+        isLearned: false,
+        publication: new Date().getTime(),
+        [lang]: word1,
+        groupName,
+        arm: word2,
+      };
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        const baseData = { ...userSnap.data() };
+        if (!baseData.words[lang]) baseData.words[lang] = [];
+        baseData.words[lang].push(addedData);
+        await t.update(usersRef, baseData);
+      });
+      return { data: addedData };
+    } catch (err) {
+      return { error: err };
+    }
+  }
 }

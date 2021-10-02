@@ -6,6 +6,11 @@ export default {
   state: {
     user: null,
   },
+  getters: {
+    getUserId(state) {
+      return state.user?.uid;
+    },
+  },
   mutations: {
     [Types.SET_USER_DATA](state, payload) {
       state.user = payload;
@@ -52,6 +57,17 @@ export default {
       } catch (err) {
         console.error(err);
       }
+    },
+    async addWord({ state, rootState }, payload) {
+      const { lang, arm, groupName } = payload;
+      const { error, data } = await Firebase.addWord(
+        rootState.base.lang,
+        lang,
+        arm,
+        state.user.uid,
+        groupName
+      );
+      return { error, data };
     },
     async resetPassword(_ctx, payload) {
       try {

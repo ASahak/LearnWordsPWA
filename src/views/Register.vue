@@ -151,8 +151,8 @@ export default {
         this["setUserData"]({});
       } catch (err) {
         console.error(err);
-        createToast(err.message, {
-          type: "error",
+        createToast(err.message || err, {
+          type: "danger",
           hideProgressBar: true,
         });
       }

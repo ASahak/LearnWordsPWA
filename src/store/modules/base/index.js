@@ -7,7 +7,19 @@ export default {
   state: {
     languages: [],
     groups: [],
+    selectedGroup: null,
     lang: LANG,
+  },
+  getters: {
+    getGroups(state) {
+      return state.groups;
+    },
+    getCurrentLang(state) {
+      return state.lang;
+    },
+    getSelectedGroupName(state) {
+      return state.selectedGroup;
+    },
   },
   mutations: {
     [Types.SET_LANGUAGES](state, payload) {
@@ -18,6 +30,9 @@ export default {
     },
     [Types.SWITCH_LANGUAGE](state, payload) {
       state.lang = payload;
+    },
+    [Types.SET_SELECTED_GROUP_NAME](state, payload) {
+      state.selectedGroup = payload;
     },
   },
   actions: {
