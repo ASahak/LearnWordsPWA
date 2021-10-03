@@ -87,8 +87,17 @@ export default {
 }
 
 .groups-list {
-  padding-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
+  max-height: 250px;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 4px;
+    background-color: #efefef;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #c9c9d3;
+  }
   & p {
     margin: 5px 10px;
   }

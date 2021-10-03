@@ -1,4 +1,5 @@
 import Types from "./types";
+import BaseTypes from "../base/types";
 import Firebase from "@/services/Firebase";
 
 export default {
@@ -67,6 +68,22 @@ export default {
         state.user.uid,
         groupName
       );
+      return { error, data };
+    },
+    async addGroup({ state, commit, rootState }, payload) {
+      const { groupName } = payload;
+      const { error, data } = await Firebase.addGroup(
+        rootState.base.lang,
+        groupName,
+        state.user.uid
+      );
+      if (!error) {
+        commit(
+          "base/" + BaseTypes.SET_GROUPS,
+          [...(rootState.base.groups || []), groupName],
+          { root: true }
+        );
+      }
       return { error, data };
     },
     async resetPassword(_ctx, payload) {

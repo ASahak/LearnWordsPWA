@@ -52,6 +52,7 @@ export default class Firebase {
         await setDoc(usersRef, {
           languages: ["en"],
           words: { en: [] },
+          groups: { en: [] },
         });
         await updateProfile(auth.currentUser, {
           displayName: username,
@@ -224,34 +225,28 @@ export default class Firebase {
       return { error: err };
     }
   }
-  //
-  // static async addGroup(lng, groupName, userId) {
-  //   try {
-  //     const docRef = firebase.firestore().collection("users").doc(userId);
-  //     return await firebase.firestore().runTransaction((transaction) => {
-  //       return transaction.get(docRef).then((snapshot) => {
-  //         let groups = snapshot.get("groups");
-  //         if (groups) {
-  //           if (!groups[lng]) {
-  //             groups[lng] = [];
-  //           }
-  //           if (groups[lng].indexOf(groupName) > -1) {
-  //             throw "Group name already exist";
-  //           }
-  //           groups[lng].push(groupName);
-  //         } else {
-  //           groups = {
-  //             [lng]: [groupName],
-  //           };
-  //         }
-  //         transaction.update(docRef, "groups", groups);
-  //       });
-  //     });
-  //   } catch (err) {
-  //     return { error: err };
-  //   }
-  // }
-  //
+
+  static async addGroup(lang, groupName, userId) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        const baseData = { ...userSnap.data() };
+        if (!baseData.groups[lang]) baseData.groups[lang] = [];
+        if (baseData.groups[lang].indexOf(groupName) > -1) {
+          throw "Group name already exist";
+        }
+        baseData.groups[lang].push(groupName);
+        await t.update(usersRef, { groups: baseData.groups });
+      });
+      return { data: groupName };
+    } catch (err) {
+      return { error: err };
+    }
+  }
+
   static async getGroups(lng, userId) {
     try {
       const { getFirestore, doc, getDoc } = firestore;
@@ -344,7 +339,7 @@ export default class Firebase {
         const baseData = { ...userSnap.data() };
         if (!baseData.words[lang]) baseData.words[lang] = [];
         baseData.words[lang].push(addedData);
-        await t.update(usersRef, baseData);
+        await t.update(usersRef, { words: baseData.words });
       });
       return { data: addedData };
     } catch (err) {

@@ -4,9 +4,16 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import AddWord from "../views/AddWord.vue";
+import Page404 from "../views/404.vue";
+import AddGroup from "../views/AddGroup.vue";
 import Firebase from "@/services/Firebase";
 
 const routes = [
+  {
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: Page404,
+  },
   {
     path: "/",
     name: "home",
@@ -35,6 +42,12 @@ const routes = [
     path: "/add-word",
     name: "add-word",
     component: AddWord,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/add-group",
+    name: "add-group",
+    component: AddGroup,
     meta: { requiresAuth: true },
   },
 ];

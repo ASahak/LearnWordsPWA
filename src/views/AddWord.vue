@@ -60,6 +60,9 @@
             class="entry-btn"
           />
         </div>
+        <router-link to="/add-group" class="entry-links"
+          >Do you want to create a new group?</router-link
+        >
       </form>
     </div>
   </div>
@@ -167,7 +170,6 @@ export default {
           type: "default",
           hideProgressBar: true,
         });
-        this.state.isLoading = false;
         this.v$.$reset();
         await this.$router.push("/");
       } catch (err) {
@@ -176,6 +178,8 @@ export default {
           type: "danger",
           hideProgressBar: true,
         });
+      } finally {
+        this.state.isLoading = false;
       }
     },
     async checkExisting() {
@@ -231,5 +235,9 @@ export default {
 
 .entry-btn {
   @extend .btn-submit_extend;
+}
+
+.entry-links {
+  @extend .entry-link_extend;
 }
 </style>

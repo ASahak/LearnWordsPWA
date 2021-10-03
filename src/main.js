@@ -18,6 +18,7 @@ import {
   faKey,
   faFileWord,
   faArrowLeft,
+  faParagraph,
   faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import * as firebase from "firebase/app";
@@ -31,6 +32,7 @@ import * as firebase from "firebase/app";
     faUser,
     faLock,
     faKey,
+    faParagraph,
     faArrowLeft,
     faBook
   );
