@@ -21,3 +21,7 @@ export const FILTERS_BY = {
   "not-learned": "Not Learned",
   "group-by": "Group by...",
 };
+
+export const BASE = {
+  listLimit: 20,
+};

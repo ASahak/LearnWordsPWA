@@ -41,6 +41,7 @@ import { required } from "@vuelidate/validators";
 import { useLoading } from "vue3-loading-overlay";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { createToast } from "mosha-vue-toastify";
+import { resetState } from "@/utils/handlers";
 
 export default {
   name: "add-group",
@@ -89,7 +90,6 @@ export default {
           type: "default",
           hideProgressBar: true,
         });
-        this.v$.$reset();
         await this.$router.push("/add-word");
       } catch (err) {
         console.error(err);
@@ -98,7 +98,11 @@ export default {
           hideProgressBar: true,
         });
       } finally {
-        this.state.isLoading = false;
+        resetState(this.state, ["groupName"]);
+        await this.$nextTick(() => {
+          this.state.isLoading = false;
+          this.v$.$reset();
+        });
       }
     },
   },

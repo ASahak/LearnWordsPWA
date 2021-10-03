@@ -4,26 +4,44 @@
       <button @click="openFilterByModal">All Words</button>
     </div>
     <div class="right--side">
-      <span> 1 / 1</span>
+      <span> {{ page }} / 1</span>
       <div class="next-prev-arrows--wrapper">
-        <span class="lnr lnr-chevron-left"></span>
-        <span class="lnr lnr-chevron-right"></span>
+        <span class="lnr lnr-chevron-left" @click="changePage(0)"></span>
+        <span class="lnr lnr-chevron-right" @click="changePage(1)"></span>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { inject } from "vue";
+import { useStore } from "vuex";
 import EmitterBus from "@/utils/eventBus";
 
 export default {
   name: "filter-by",
   setup() {
-    return {};
-  },
-  methods: {
-    openFilterByModal() {
-      EmitterBus.$emit("toggle-modal", "filter-by-modal");
-    },
+    const page = inject("page");
+    const store = useStore();
+
+    const changePage = (isNext) => {
+      const _page = page.value;
+      EmitterBus.$emit(
+        "change-page",
+        isNext ? _page + 1 : _page > 1 ? _page - 1 : 1
+      );
+    };
+
+    const openFilterByModal = () => {
+      EmitterBus.$emit("toggle-modal", "filter-by-modal", {
+        data: store.getters["base/getGroups"],
+      });
+    };
+
+    return {
+      page,
+      changePage,
+      openFilterByModal,
+    };
   },
 };
 </script>

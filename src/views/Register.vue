@@ -142,19 +142,21 @@ export default {
           password: this.state.password,
         });
         if (error) throw error;
-        this.state.isLoading = false;
         await this.$router.push("/");
         createToast(msg, {
           type: "default",
           hideProgressBar: true,
         });
-        this["setUserData"]({});
+        const isError = this["setUserData"]({});
+        if (isError.error) throw isError.error;
       } catch (err) {
         console.error(err);
         createToast(err.message || err, {
           type: "danger",
           hideProgressBar: true,
         });
+      } finally {
+        this.state.isLoading = false;
       }
     },
   },

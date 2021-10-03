@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import * as firestore from "firebase/firestore";
 // import { runTransaction } from "firebase/firestore";
-import { createToast } from "mosha-vue-toastify";
+import { BASE } from "@/utils/constants";
 // import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 // import firestore from "firebase/firestore";
 // import auth from "firebase/auth";
@@ -75,10 +75,6 @@ export default class Firebase {
       const { displayName, uid } = userCredential?.user;
       return { displayName, uid };
     } catch (err) {
-      createToast(err.message || err, {
-        type: "danger",
-        hideProgressBar: true,
-      });
       return { error: err };
     }
   }
@@ -133,79 +129,81 @@ export default class Firebase {
     }
   }
 
-  // static async getList(userId, lang, filters) {
-  //   try {
-  //     const wordsData = await firebase
-  //       .firestore()
-  //       .collection("users")
-  //       .doc(userId)
-  //       .get();
-  //     let words = wordsData.data()?.words?.[lang];
-  //
-  //     if (filters?.isGroupBy) {
-  //       words = words.filter((e) => e.groupName === filters.filterBy);
-  //     } else if (filters.filterBy === "learned") {
-  //       words = words.filter((e) => e.isLearned);
-  //     } else if (filters.filterBy === "not-learned") {
-  //       words = words.filter((e) => !e.isLearned);
-  //     } else if (filters.filterBy === "z-a") {
-  //       words = words.sort((a, b) => {
-  //         if (a[lang] > b[lang]) {
-  //           return -1;
-  //         }
-  //         if (a[lang] < b[lang]) {
-  //           return 1;
-  //         }
-  //         return 0;
-  //       });
-  //     } else if (filters.filterBy === "a-z") {
-  //       words = words.sort((a, b) => {
-  //         if (a[lang] < b[lang]) {
-  //           return -1;
-  //         }
-  //         if (a[lang] > b[lang]) {
-  //           return 1;
-  //         }
-  //         return 0;
-  //       });
-  //     } else if (filters.filterBy === "increase-date") {
-  //       words = words.sort((a, b) => {
-  //         if (a.publication < b.publication) {
-  //           return -1;
-  //         }
-  //         if (a.publication > b.publication) {
-  //           return 1;
-  //         }
-  //         return 0;
-  //       });
-  //     } else if (filters.filterBy === "decrease-date") {
-  //       words = words.sort((a, b) => {
-  //         if (a.publication > b.publication) {
-  //           return -1;
-  //         }
-  //         if (a.publication < b.publication) {
-  //           return 1;
-  //         }
-  //         return 0;
-  //       });
-  //     }
-  //     if (filters.searchValue) {
-  //       words = words.filter(
-  //         (e) =>
-  //           (e[lang] || "")
-  //             .toLowerCase()
-  //             .indexOf((filters.searchValue || "").toLowerCase()) > -1 ||
-  //           (e.arm || "")
-  //             .toLowerCase()
-  //             .indexOf((filters.searchValue || "").toLowerCase()) > -1
-  //       );
-  //     }
-  //     return { words };
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
-  //
+  static async getList(userId, lang, { filters, page }) {
+    try {
+      console.log(userId, lang, filters, page, BASE.listLimit);
+      //     const wordsData = await firebase
+      //       .firestore()
+      //       .collection("users")
+      //       .doc(userId)
+      //       .get();
+      //     let words = wordsData.data()?.words?.[lang];
+      //
+      //     if (filters?.isGroupBy) {
+      //       words = words.filter((e) => e.groupName === filters.filterBy);
+      //     } else if (filters.filterBy === "learned") {
+      //       words = words.filter((e) => e.isLearned);
+      //     } else if (filters.filterBy === "not-learned") {
+      //       words = words.filter((e) => !e.isLearned);
+      //     } else if (filters.filterBy === "z-a") {
+      //       words = words.sort((a, b) => {
+      //         if (a[lang] > b[lang]) {
+      //           return -1;
+      //         }
+      //         if (a[lang] < b[lang]) {
+      //           return 1;
+      //         }
+      //         return 0;
+      //       });
+      //     } else if (filters.filterBy === "a-z") {
+      //       words = words.sort((a, b) => {
+      //         if (a[lang] < b[lang]) {
+      //           return -1;
+      //         }
+      //         if (a[lang] > b[lang]) {
+      //           return 1;
+      //         }
+      //         return 0;
+      //       });
+      //     } else if (filters.filterBy === "increase-date") {
+      //       words = words.sort((a, b) => {
+      //         if (a.publication < b.publication) {
+      //           return -1;
+      //         }
+      //         if (a.publication > b.publication) {
+      //           return 1;
+      //         }
+      //         return 0;
+      //       });
+      //     } else if (filters.filterBy === "decrease-date") {
+      //       words = words.sort((a, b) => {
+      //         if (a.publication > b.publication) {
+      //           return -1;
+      //         }
+      //         if (a.publication < b.publication) {
+      //           return 1;
+      //         }
+      //         return 0;
+      //       });
+      //     }
+      //     if (filters.searchValue) {
+      //       words = words.filter(
+      //         (e) =>
+      //           (e[lang] || "")
+      //             .toLowerCase()
+      //             .indexOf((filters.searchValue || "").toLowerCase()) > -1 ||
+      //           (e.arm || "")
+      //             .toLowerCase()
+      //             .indexOf((filters.searchValue || "").toLowerCase()) > -1
+      //       );
+      //     }
+      //     return { words };
+      return {};
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
   static async checkExistingWord(lang, word1, userId) {
     try {
       const { getFirestore, doc, getDoc } = firestore;

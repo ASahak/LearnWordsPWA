@@ -56,9 +56,11 @@
   </div>
 </template>
 <script>
-import { reactive, computed, ref, watchEffect } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { useStore, mapActions } from "vuex";
 import useVuelidate from "@vuelidate/core";
+import { resetState } from "@/utils/handlers";
+import { createToast } from "mosha-vue-toastify";
 import { useLoading } from "vue3-loading-overlay";
 import { required, email } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
@@ -79,16 +81,19 @@ export default {
       isLoading: false,
     });
 
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
-    });
+    watch(
+      () => state.isLoading,
+      () => {
+        if (state.isLoading) {
+          loader.show({
+            container: indicatorRef.value,
+            height: 18,
+            width: 18,
+            color: "#191675",
+          });
+        } else loader.hide();
+      }
+    );
 
     const rules = computed(() => ({
       password: { required },
@@ -106,15 +111,24 @@ export default {
         const isValid = await this.v$.$validate();
         if (!isValid) return;
         this.state.isLoading = true;
-        await this["setUserData"]({
+        const { error } = await this["setUserData"]({
           email: this.state.email,
           password: this.state.password,
         });
-        this.state.isLoading = false;
-        this.v$.$reset();
+        if (error) throw error;
         await this.$router.push("/");
       } catch (err) {
         console.error(err);
+        createToast(err.message || err, {
+          type: "danger",
+          hideProgressBar: true,
+        });
+      } finally {
+        resetState(this.state, ["email", "password"]);
+        await this.$nextTick(() => {
+          this.state.isLoading = false;
+          this.v$.$reset();
+        });
       }
     },
   },

@@ -7,4 +7,9 @@ function createDebounce() {
     }, delayMs || 500);
   };
 }
-export { createDebounce };
+
+function resetState(state, props) {
+  props.map((prop) => (state[prop] = ""));
+}
+
+export { createDebounce, resetState };

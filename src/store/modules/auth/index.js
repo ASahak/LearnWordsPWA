@@ -41,10 +41,18 @@ export default {
           userData = data;
         }
         commit(Types.SET_USER_DATA, userData);
-        dispatch("base/setLanguages", userData.uid, { root: true });
-        dispatch("base/setGroups", userData.uid, { root: true });
+        const isLangError = dispatch("base/setLanguages", userData.uid, {
+          root: true,
+        });
+        const isGroupError = dispatch("base/setGroups", userData.uid, {
+          root: true,
+        });
+        if (isLangError.error || isGroupError.error)
+          throw isLangError.error || isGroupError.error;
+        return {};
       } catch (err) {
         console.error(err);
+        return { error: err };
       }
     },
     async registerUser(_ctx, payload) {

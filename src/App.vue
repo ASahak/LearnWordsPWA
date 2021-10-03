@@ -25,6 +25,7 @@
 <script>
 import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
+import { createToast } from "mosha-vue-toastify";
 import NativePanel from "@/shared/NativeOptionsTopPanel";
 import Modals from "@/shared/Modals";
 import EmitterBus from "@/utils/eventBus";
@@ -47,7 +48,13 @@ export default {
     };
 
     onBeforeMount(() => {
-      store.dispatch("auth/setUserData", { byRoot: true });
+      const { error } = store.dispatch("auth/setUserData", { byRoot: true });
+      if (error) {
+        createToast(error, {
+          type: "danger",
+          hideProgressBar: true,
+        });
+      }
     });
 
     return {

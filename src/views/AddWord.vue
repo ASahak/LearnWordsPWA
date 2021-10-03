@@ -77,7 +77,7 @@ import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { LANG } from "@/utils/constants";
 import EmitterBus from "@/utils/eventBus";
-import { createDebounce } from "@/utils/handlers";
+import { createDebounce, resetState } from "@/utils/handlers";
 import Types from "@/store/modules/base/types";
 import Firebase from "@/services/Firebase";
 
@@ -170,7 +170,6 @@ export default {
           type: "default",
           hideProgressBar: true,
         });
-        this.v$.$reset();
         await this.$router.push("/");
       } catch (err) {
         console.error(err);
@@ -179,7 +178,11 @@ export default {
           hideProgressBar: true,
         });
       } finally {
-        this.state.isLoading = false;
+        resetState(this.state, ["lang", "arm"]);
+        await this.$nextTick(() => {
+          this.state.isLoading = false;
+          this.v$.$reset();
+        });
       }
     },
     async checkExisting() {

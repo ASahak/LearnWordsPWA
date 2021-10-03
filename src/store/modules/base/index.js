@@ -54,8 +54,10 @@ export default {
         const { data, error } = await Firebase.getLanguages(payloadId);
         if (error) throw error;
         commit(Types.SET_LANGUAGES, data);
+        return {};
       } catch (err) {
         console.error(err);
+        return { error: err };
       }
     },
     async setGroups({ commit, state }, payloadId) {
@@ -63,8 +65,25 @@ export default {
         const { data, error } = await Firebase.getGroups(state.lang, payloadId);
         if (error) throw error;
         commit(Types.SET_GROUPS, data);
+        return {};
       } catch (err) {
         console.error(err);
+        return { error: err };
+      }
+    },
+    async getList({ state, rootState }, payload) {
+      try {
+        const { filters, page } = payload;
+        const { error } = await Firebase.getList(
+          rootState.auth.user.uid,
+          state.lang,
+          { filters, page }
+        );
+        if (error) throw error;
+        return {};
+      } catch (err) {
+        console.error(err);
+        return { error: err };
       }
     },
   },

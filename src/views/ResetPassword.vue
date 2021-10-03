@@ -40,6 +40,7 @@ import { useLoading } from "vue3-loading-overlay";
 import { required, email } from "@vuelidate/validators";
 import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
+import { resetState } from "@/utils/handlers";
 
 export default {
   name: "reset-password",
@@ -87,11 +88,6 @@ export default {
           email: this.state.email,
         });
         if (error) throw error;
-        this.state.email = "";
-        await this.$nextTick(() => {
-          this.state.isLoading = false;
-          this.v$.$reset();
-        });
         createToast(msg, {
           type: "default",
           hideProgressBar: true,
@@ -100,6 +96,12 @@ export default {
         createToast(err.message || err, {
           type: "danger",
           hideProgressBar: true,
+        });
+      } finally {
+        resetState(this.state, ["email"]);
+        await this.$nextTick(() => {
+          this.state.isLoading = false;
+          this.v$.$reset();
         });
       }
     },
