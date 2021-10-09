@@ -20,6 +20,8 @@ import {
   faArrowLeft,
   faParagraph,
   faUserAlt,
+  faCalendarDay,
+  faClosedCaptioning,
 } from "@fortawesome/free-solid-svg-icons";
 import * as firebase from "firebase/app";
 
@@ -34,7 +36,9 @@ import * as firebase from "firebase/app";
     faKey,
     faParagraph,
     faArrowLeft,
-    faBook
+    faBook,
+    faCalendarDay,
+    faClosedCaptioning
   );
 
   const firebaseConfig = {

@@ -1,44 +1,74 @@
 <template>
   <div class="filter-by--container">
-    <div class="left--side">
-      <button @click="openFilterByModal">All Words</button>
+    <div class="left-side">
+      <button @click="openFilterByModal">{{ getFilterName }}</button>
     </div>
-    <div class="right--side">
-      <span> {{ page }} / 1</span>
+    <div class="right-side">
+      <span class="right-side__counter" v-show="wordsCount && page">
+        {{ page }} / {{ wordsCount }}</span
+      >
       <div class="next-prev-arrows--wrapper">
-        <span class="lnr lnr-chevron-left" @click="changePage(0)"></span>
-        <span class="lnr lnr-chevron-right" @click="changePage(1)"></span>
+        <span
+          class="lnr lnr-chevron-left"
+          :class="{ disabled: page === 1 }"
+          @click="changePage(0)"
+        ></span>
+        <span
+          class="lnr lnr-chevron-right"
+          :class="{ disabled: page === wordsCount }"
+          @click="changePage(1)"
+        ></span>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import { useStore } from "vuex";
+import { FILTERS_BY } from "@/utils/constants";
 import EmitterBus from "@/utils/eventBus";
 
 export default {
   name: "filter-by",
   setup() {
     const page = inject("page");
+    const filters = inject("filters");
     const store = useStore();
+
+    const getFilterName = computed(() => {
+      return filters.value.isGroup
+        ? filters.value.key
+        : FILTERS_BY[filters.value.key || "*"];
+    });
+
+    const wordsCount = computed(() => store.getters["base/getWordsCount"]);
 
     const changePage = (isNext) => {
       const _page = page.value;
       EmitterBus.$emit(
         "change-page",
-        isNext ? _page + 1 : _page > 1 ? _page - 1 : 1
+        isNext
+          ? wordsCount.value === _page
+            ? wordsCount.value
+            : _page + 1
+          : _page > 1
+          ? _page - 1
+          : 1
       );
     };
 
     const openFilterByModal = () => {
       EmitterBus.$emit("toggle-modal", "filter-by-modal", {
         data: store.getters["base/getGroups"],
+        filters,
       });
     };
 
     return {
+      FILTERS_BY,
+      getFilterName,
       page,
+      wordsCount,
       changePage,
       openFilterByModal,
     };
@@ -54,11 +84,14 @@ export default {
   align-items: center;
 }
 
-.right--side {
+.right-side {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   font-size: 14px;
+  & .right-side__counter {
+    margin-right: 10px;
+  }
 }
 
 .next-prev-arrows--wrapper {
@@ -67,9 +100,13 @@ export default {
     font-size: 16px;
     cursor: pointer;
     margin-left: 7px;
+    &.disabled {
+      pointer-events: none;
+      color: #ccc;
+    }
   }
 }
-.left--side {
+.left-side {
   text-align: left;
   & > button {
     cursor: pointer;

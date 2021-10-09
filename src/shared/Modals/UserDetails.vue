@@ -14,7 +14,7 @@
           Switch language
         </p>
         <p class="paragraphs" @click="logOut">Log out</p>
-        <button class="btn-default modal-btn" @click="closeDialog">
+        <button class="btn btn--default modal-btn" @click="closeDialog">
           Close
         </button>
       </div>
@@ -45,7 +45,7 @@
           <div ref="indicatorRef" class="indicator-container">
             <button
               :disabled="!state.checkedLang"
-              class="btn-default modal-btn"
+              class="btn btn--default modal-btn"
               @click="addLanguage"
             >
               {{ !state.isLoading ? "Add" : "" }}
@@ -79,7 +79,7 @@
               :disabled="
                 !state.checkedLang || currentLang === state.checkedLang
               "
-              class="btn-default modal-btn"
+              class="btn btn--default modal-btn"
               @click="switchLanguage"
             >
               {{ !state.isLoading ? "Switch" : "" }}

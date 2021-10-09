@@ -1,0 +1,381 @@
+<template>
+  <div class="backdrop-wrapper">
+    <div class="modal-container">
+      <h3 class="title" v-if="!state.groupView">
+        Edit word
+        <span
+          class="lnr lnr-cross modal-close-icon"
+          @click="closeDialog"
+        ></span>
+      </h3>
+      <font-awesome-icon
+        v-else
+        icon="arrow-left"
+        @click="goBack"
+        class="back-btn"
+      />
+      <div v-if="!state.groupView">
+        <div
+          :class="[
+            'input-container',
+            { 'error-field': v$.lang.$error || state.ifExistingSameWord },
+          ]"
+        >
+          <label>{{ currentLangCapitalize }}</label>
+          <font-awesome-icon icon="file-word" class="input-icon" />
+          <input
+            name="text-lang"
+            type="text"
+            :placeholder="'Type the word by ' + currentLang"
+            v-model="state.lang"
+            @keyup="debounce(checkExisting, 500)"
+          />
+          <p
+            v-if="v$.lang.$error || state.ifExistingSameWord"
+            class="error-msg"
+          >
+            {{ v$.lang.$errors[0]?.$message || state.ifExistingSameWord }}
+          </p>
+        </div>
+        <div :class="['input-container', { 'error-field': v$.arm.$error }]">
+          <label>Arm</label>
+          <font-awesome-icon icon="file-word" class="input-icon" />
+          <input
+            name="text-lang"
+            type="text"
+            placeholder="Type the word by arm"
+            v-model="state.arm"
+          />
+          <p v-if="v$.arm.$error" class="error-msg">
+            {{ v$.arm.$errors[0].$message }}
+          </p>
+        </div>
+        <div class="like-input-container" @click="goToGroupView">
+          <label>Group name</label>
+          <p :class="{ 'value--selected': state.groupName }">
+            <font-awesome-icon icon="object-group" class="input-icon" />
+            {{ state.groupName || "Choose group name" }}
+            <span
+              v-if="state.groupName"
+              class="lnr lnr-cross cancel-value"
+              @click.stop="resetGroupName"
+            ></span>
+          </p>
+        </div>
+        <div class="like-input-container input--date-created">
+          <label>Date created</label>
+          <p :class="{ 'value--selected': dataWord.publication }">
+            <font-awesome-icon icon="calendar-day" class="input-icon" />
+            {{ format(dataWord.publication, "DD/MM/YY") }}
+          </p>
+        </div>
+        <label for="learned" class="input-like-label-checkbox">
+          <input
+            type="checkbox"
+            id="learned"
+            :checked="dataWord.isLearned"
+            v-model="state.isLearned"
+          />
+          I have learned this already
+        </label>
+        <div class="modal-actions-wrapper">
+          <button class="btn btn--danger modal-btn">Delete</button>
+          <button class="btn btn--default modal-btn" @click="updateWord">
+            Update
+          </button>
+        </div>
+      </div>
+      <div class="group-list" v-else>
+        <div class="groups-list">
+          <label
+            v-for="groupName in groups"
+            :key="groupName"
+            class="groups-list__item"
+          >
+            <input
+              type="radio"
+              name="group-name"
+              :checked="state.groupName === groupName"
+              @change="changeGroupName(groupName)"
+            />
+            <p class="paragraphs">{{ groupName }}</p>
+          </label>
+        </div>
+        <div class="modal-actions-wrapper">
+          <button
+            :disabled="!state.groupName"
+            class="btn btn--default modal-btn"
+            @click="selectGroupName"
+          >
+            Select
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { computed, reactive, toRef, watch } from "vue";
+import { useStore } from "vuex";
+import useVuelidate from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import { format } from "date-fns";
+import { LANG } from "@/utils/constants";
+import { createDebounce, resetState } from "@/utils/handlers";
+import Firebase from "@/services/Firebase";
+import EmitterBus from "@/utils/eventBus";
+import { createToast } from "mosha-vue-toastify";
+
+export default {
+  name: "crud-word-modal",
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+  },
+  setup(props) {
+    const store = useStore();
+    const dataWord = toRef(props, "data");
+
+    const state = reactive({
+      lang: "",
+      arm: "",
+      groupName: null,
+      ifExistingSameWord: null,
+      isLoading: false,
+      isLearned: false,
+      groupView: false,
+    });
+
+    const currentLang = computed(() => {
+      return store.getters["base/getCurrentLang"] || LANG;
+    });
+
+    const groups = computed(() => {
+      return store.getters["base/getGroups"] || [];
+    });
+
+    const currentLangCapitalize = computed(() => {
+      return (
+        currentLang.value.charAt(0).toUpperCase() + currentLang.value.slice(1)
+      );
+    });
+
+    watch(
+      () => [dataWord.value, currentLang.value],
+      () => {
+        state.lang = dataWord.value[currentLang.value];
+        state.arm = dataWord.value.arm;
+        state.groupName = dataWord.value.groupName;
+        state.isLearned = dataWord.value.isLearned;
+      },
+      { immediate: true }
+    );
+
+    const userId = computed(() => {
+      return store.getters["auth/getUserId"];
+    });
+
+    const rules = computed(() => ({
+      arm: { required },
+      lang: { required },
+    }));
+
+    const changeGroupName = (groupName) => {
+      state.groupName = groupName;
+    };
+
+    const selectGroupName = () => {
+      state.groupView = false;
+    };
+
+    const closeDialog = () => {
+      EmitterBus.$emit("toggle-modal", null);
+    };
+
+    const goBack = () => {
+      state.groupName = dataWord.value.groupName;
+      state.groupView = false;
+    };
+    const resetGroupName = () => {
+      state.groupName = null;
+    };
+
+    const goToGroupView = () => {
+      state.groupView = true;
+    };
+
+    const checkExisting = async () => {
+      try {
+        if (state.lang === dataWord.value[currentLang.value]) return;
+        const { error } = await Firebase.checkExistingWord(
+          currentLang.value,
+          state.lang,
+          userId.value
+        );
+        if (error) throw error;
+        state.ifExistingSameWord = null;
+      } catch (err) {
+        console.error(err);
+        state.ifExistingSameWord = err.message || err;
+      }
+    };
+
+    const updateWord = () => {
+      try {
+        const { isLearned, arm, lang, groupName } = state;
+        const { error } = store.dispatch("base/updateWord", {
+          isLearned,
+          word1: lang,
+          word2: arm,
+          groupName,
+          userId: userId.value,
+          publication: dataWord.value.publication,
+          lang: currentLang.value,
+        });
+        if (error) throw error;
+        resetState(state, [
+          "lang",
+          "arm",
+          "groupName",
+          "ifExistingSameWord",
+          "isLoading",
+          "isLearned",
+          "groupView",
+        ]);
+        EmitterBus.$emit("toggle-modal", null);
+      } catch (err) {
+        createToast(err.message || err, {
+          type: "danger",
+          hideProgressBar: true,
+        });
+      }
+    };
+
+    const v$ = useVuelidate(rules, state);
+
+    return {
+      dataWord,
+      v$,
+      currentLang,
+      groups,
+      checkExisting,
+      changeGroupName,
+      selectGroupName,
+      goToGroupView,
+      goBack,
+      closeDialog,
+      updateWord,
+      resetGroupName,
+      format,
+      state,
+      currentLangCapitalize,
+      debounce: createDebounce(),
+    };
+  },
+};
+</script>
+<style lang="scss" scoped>
+.modal-close-icon {
+  position: absolute;
+  right: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.modal-actions-wrapper {
+  margin: 20px 0 5px;
+  text-align: right;
+  & .btn--danger {
+    margin-right: 10px;
+  }
+}
+
+.title {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.like-input-container {
+  @extend .input-container_extend;
+  & > p {
+    cursor: pointer;
+    border: none;
+    margin: 0;
+    font-size: 13px;
+    border-bottom: 2px solid #3333;
+    width: 100%;
+    outline: none;
+    color: rgb(117, 117, 117);
+    padding: 8px 8px 8px 30px;
+    position: relative;
+    & .cancel-value {
+      font-size: 13px;
+      position: absolute;
+      right: 5px;
+      font-weight: 900;
+      cursor: pointer;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      height: 13px;
+    }
+    &.value--selected {
+      color: #000;
+    }
+  }
+  &.input--date-created {
+    & > p {
+      cursor: not-allowed;
+      color: #a5a0a0;
+    }
+  }
+}
+
+.input-like-label-checkbox {
+  font-size: 14px;
+  line-height: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  & input {
+    width: 15px;
+    height: 15px;
+    margin: 0 10px 0 0;
+  }
+}
+
+.groups-list {
+  margin: 10px 0;
+  max-height: 250px;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 4px;
+    background-color: #efefef;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #c9c9d3;
+  }
+  & p {
+    margin: 5px 10px;
+  }
+}
+
+.groups-list__item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & input {
+    cursor: pointer;
+    margin: 0;
+  }
+}
+
+.back-btn {
+  margin-top: 10px;
+  cursor: pointer;
+}
+</style>

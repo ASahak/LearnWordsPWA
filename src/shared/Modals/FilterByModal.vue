@@ -28,7 +28,11 @@
         </template>
       </div>
       <div class="modal-actions-wrapper">
-        <button class="btn-default modal-btn" :disabled="!state.checkedFilter">
+        <button
+          class="btn btn--default modal-btn"
+          :disabled="!state.checkedFilter"
+          @click="getFilteredData"
+        >
           Get List
         </button>
       </div>
@@ -36,8 +40,9 @@
   </div>
 </template>
 <script>
+import { computed, onMounted, reactive, toRef } from "vue";
 import { FILTERS_BY } from "@/utils/constants";
-import { computed, reactive, toRef } from "vue";
+import EmitterBus from "@/utils/eventBus";
 
 export default {
   name: "filter-by-modal",
@@ -45,13 +50,19 @@ export default {
     data: {
       type: Array,
       required: false,
+      default: () => [],
+    },
+    filters: {
+      type: Object,
+      required: true,
     },
   },
   setup(props) {
     const dataGroups = toRef(props, "data");
+    const filtersPropData = toRef(props, "filters");
     const state = reactive({
       groupPage: false,
-      checkedFilter: null,
+      checkedFilter: "*",
     });
 
     const filterByData = computed(() =>
@@ -75,11 +86,25 @@ export default {
       state.groupPage = false;
     };
 
+    const getFilteredData = () => {
+      EmitterBus.$emit("filters", {
+        key: state.checkedFilter,
+        isGroup: state.groupPage,
+      });
+      EmitterBus.$emit("toggle-modal", null);
+    };
+
+    onMounted(() => {
+      if (filtersPropData.value.isGroup) state.groupPage = true;
+      state.checkedFilter = filtersPropData.value.key;
+    });
+
     return {
       dataGroups,
       state,
-      goBack,
       filterByData,
+      goBack,
+      getFilteredData,
       changeFilterName,
     };
   },

@@ -16,6 +16,7 @@ import EmitterBus from "@/utils/eventBus";
 import UserDetailsModal from "@/shared/Modals/UserDetails";
 import FilterByModal from "@/shared/Modals/FilterByModal";
 import GroupsModal from "@/shared/Modals/GroupsModal";
+import CRUDWord from "@/shared/Modals/CRUDWord";
 
 export default {
   name: "modals",
@@ -23,6 +24,7 @@ export default {
     "user-details-modal": UserDetailsModal,
     "filter-by-modal": FilterByModal,
     "groups-modal": GroupsModal,
+    "crud-word-modal": CRUDWord,
   },
   emits: ["toggle-modal-bg-image"],
   setup(_props, context) {

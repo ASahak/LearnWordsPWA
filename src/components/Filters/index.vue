@@ -1,5 +1,6 @@
 <script>
-import { h } from "vue";
+import { computed, h } from "vue";
+import { useStore } from "vuex";
 import Search from "./Search";
 import FilterBy from "./FilterBy";
 
@@ -10,10 +11,19 @@ export default {
     FilterBy,
   },
   setup() {
+    const store = useStore();
+
+    const wordsCount = computed(() => store.getters["base/getWordsCount"]);
+
     return () =>
       h(
         "div",
-        { className: "filters-container" },
+        {
+          class: {
+            "filters-container": true,
+            "still-getting-data": !wordsCount.value,
+          },
+        },
         <>
           {h(Search, {})} {h(FilterBy, {})}
         </>
@@ -25,5 +35,17 @@ export default {
 .filters-container {
   padding: 10px;
   background: #ebebeb;
+  position: relative;
+  &.still-getting-data {
+    filter: blur(1px);
+    &::after {
+      content: "";
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+    }
+  }
 }
 </style>

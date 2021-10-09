@@ -8,13 +8,6 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import * as firestore from "firebase/firestore";
-// import { runTransaction } from "firebase/firestore";
-import { BASE } from "@/utils/constants";
-// import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-// import firestore from "firebase/firestore";
-// import auth from "firebase/auth";
-// import { FiltersModel, WordModel } from '@core/models';
-// import { Languages } from '@core/enums';
 
 export default class Firebase {
   static getLoggedUser() {
@@ -129,76 +122,18 @@ export default class Firebase {
     }
   }
 
-  static async getList(userId, lang, { filters, page }) {
+  static async getList(userId, lang) {
     try {
-      console.log(userId, lang, filters, page, BASE.listLimit);
-      //     const wordsData = await firebase
-      //       .firestore()
-      //       .collection("users")
-      //       .doc(userId)
-      //       .get();
-      //     let words = wordsData.data()?.words?.[lang];
-      //
-      //     if (filters?.isGroupBy) {
-      //       words = words.filter((e) => e.groupName === filters.filterBy);
-      //     } else if (filters.filterBy === "learned") {
-      //       words = words.filter((e) => e.isLearned);
-      //     } else if (filters.filterBy === "not-learned") {
-      //       words = words.filter((e) => !e.isLearned);
-      //     } else if (filters.filterBy === "z-a") {
-      //       words = words.sort((a, b) => {
-      //         if (a[lang] > b[lang]) {
-      //           return -1;
-      //         }
-      //         if (a[lang] < b[lang]) {
-      //           return 1;
-      //         }
-      //         return 0;
-      //       });
-      //     } else if (filters.filterBy === "a-z") {
-      //       words = words.sort((a, b) => {
-      //         if (a[lang] < b[lang]) {
-      //           return -1;
-      //         }
-      //         if (a[lang] > b[lang]) {
-      //           return 1;
-      //         }
-      //         return 0;
-      //       });
-      //     } else if (filters.filterBy === "increase-date") {
-      //       words = words.sort((a, b) => {
-      //         if (a.publication < b.publication) {
-      //           return -1;
-      //         }
-      //         if (a.publication > b.publication) {
-      //           return 1;
-      //         }
-      //         return 0;
-      //       });
-      //     } else if (filters.filterBy === "decrease-date") {
-      //       words = words.sort((a, b) => {
-      //         if (a.publication > b.publication) {
-      //           return -1;
-      //         }
-      //         if (a.publication < b.publication) {
-      //           return 1;
-      //         }
-      //         return 0;
-      //       });
-      //     }
-      //     if (filters.searchValue) {
-      //       words = words.filter(
-      //         (e) =>
-      //           (e[lang] || "")
-      //             .toLowerCase()
-      //             .indexOf((filters.searchValue || "").toLowerCase()) > -1 ||
-      //           (e.arm || "")
-      //             .toLowerCase()
-      //             .indexOf((filters.searchValue || "").toLowerCase()) > -1
-      //       );
-      //     }
-      //     return { words };
-      return {};
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      return await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.exists()) {
+          let words = userSnap.data().words[lang];
+          return { words };
+        } else throw "Document was not found!";
+      });
     } catch (err) {
       return { error: err.message };
     }
@@ -263,40 +198,46 @@ export default class Firebase {
       return { error: err };
     }
   }
-  //
-  // static async updateWord(
-  //   lang,
-  //   word1,
-  //   word2,
-  //   userId,
-  //   isLearned,
-  //   publication,
-  //   groupName
-  // ) {
-  //   try {
-  //     const docRef = firebase.firestore().collection("users").doc(userId);
-  //     return await firebase.firestore().runTransaction((transaction) => {
-  //       return transaction.get(docRef).then((snapshot) => {
-  //         const largerArray = snapshot.get("words");
-  //         const itemIndex = largerArray?.[lang]?.findIndex(
-  //           (e) => e.publication === publication
-  //         );
-  //         if (itemIndex > -1) {
-  //           largerArray[lang][itemIndex] = {
-  //             [lang]: word1,
-  //             arm: word2,
-  //             publication,
-  //             isLearned,
-  //             groupName: groupName || "",
-  //           };
-  //         }
-  //         transaction.update(docRef, "words", largerArray);
-  //       });
-  //     });
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
+
+  static async updateWord({
+    lang,
+    word1,
+    word2,
+    userId,
+    isLearned,
+    publication,
+    groupName,
+  }) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.exists()) {
+          const baseData = { ...userSnap.data() };
+
+          const wordsData = baseData.words;
+          const itemIndex = wordsData[lang].findIndex(
+            (e) => e.publication === publication
+          );
+          if (itemIndex > -1) {
+            wordsData[lang][itemIndex] = {
+              [lang]: word1,
+              arm: word2,
+              publication,
+              isLearned,
+              groupName: groupName || "",
+            };
+            await t.update(usersRef, { words: wordsData });
+          }
+        }
+      });
+      return {};
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
   //
   // static async deleteWord(lang, userId, publication) {
   //   try {

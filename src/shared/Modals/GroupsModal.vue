@@ -20,7 +20,7 @@
       <div class="modal-actions-wrapper">
         <button
           :disabled="!state.checkedGroup"
-          class="btn-default modal-btn"
+          class="btn btn--default modal-btn"
           @click="selectGroupName"
         >
           Select
