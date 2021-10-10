@@ -1,13 +1,34 @@
 <template>
   <div class="search-input--wrapper">
-    <input type="text" placeholder="Find word..." />
+    <input
+      v-model="state.searchValue"
+      @input="debounce(searchWord, 500)"
+      type="text"
+      placeholder="Find word..."
+    />
   </div>
 </template>
 <script>
+import { createDebounce } from "@/utils/handlers";
+import EmitterBus from "@/utils/eventBus";
+import { reactive } from "vue";
+
 export default {
   name: "search",
   setup() {
-    return {};
+    const state = reactive({
+      searchValue: "",
+    });
+
+    const searchWord = () => {
+      EmitterBus.$emit("filters", { searchValue: state.searchValue });
+    };
+
+    return {
+      state,
+      searchWord,
+      debounce: createDebounce(),
+    };
   },
 };
 </script>

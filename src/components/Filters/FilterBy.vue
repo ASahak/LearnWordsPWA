@@ -3,8 +3,8 @@
     <div class="left-side">
       <button @click="openFilterByModal">{{ getFilterName }}</button>
     </div>
-    <div class="right-side">
-      <span class="right-side__counter" v-show="wordsPagesCount && page">
+    <div class="right-side" v-show="wordsPagesCount && page">
+      <span class="right-side__counter">
         {{ page }} / {{ wordsPagesCount }}</span
       >
       <div class="next-prev-arrows--wrapper">
@@ -48,7 +48,11 @@ export default {
     watch(
       () => [wordsPagesCount.value, page.value],
       () => {
-        if (wordsPagesCount.value < page.value) {
+        if (
+          wordsPagesCount.value &&
+          page.value &&
+          wordsPagesCount.value < page.value
+        ) {
           EmitterBus.$emit("change-page", wordsPagesCount.value);
         }
       }

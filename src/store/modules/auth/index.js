@@ -41,14 +41,23 @@ export default {
           userData = data;
         }
         commit(Types.SET_USER_DATA, userData);
-        const isLangError = dispatch("base/setLanguages", userData.uid, {
+        const isLangError = await dispatch("base/getLanguage", userData.uid, {
           root: true,
         });
-        const isGroupError = dispatch("base/setGroups", userData.uid, {
+        const isLanguagesError = await dispatch(
+          "base/setLanguages",
+          userData.uid,
+          {
+            root: true,
+          }
+        );
+        const isGroupError = await dispatch("base/setGroups", userData.uid, {
           root: true,
         });
-        if (isLangError.error || isGroupError.error)
-          throw isLangError.error || isGroupError.error;
+        if (isLangError.error || isLanguagesError.error || isGroupError.error)
+          throw (
+            isLangError.error || isGroupError.error || isLanguagesError.error
+          );
         return {};
       } catch (err) {
         console.error(err);

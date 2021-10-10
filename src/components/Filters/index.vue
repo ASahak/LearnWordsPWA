@@ -1,6 +1,5 @@
 <script>
-import { computed, h } from "vue";
-import { useStore } from "vuex";
+import { h } from "vue";
 import Search from "./Search";
 import FilterBy from "./FilterBy";
 
@@ -11,19 +10,12 @@ export default {
     FilterBy,
   },
   setup() {
-    const store = useStore();
-
-    const wordsPagesCount = computed(
-      () => store.getters["base/getWordsPagesCount"]
-    );
-
     return () =>
       h(
         "div",
         {
           class: {
             "filters-container": true,
-            "still-getting-data": !wordsPagesCount.value,
           },
         },
         <>
@@ -38,16 +30,5 @@ export default {
   padding: 10px;
   background: #ebebeb;
   position: relative;
-  &.still-getting-data {
-    filter: blur(1px);
-    &::after {
-      content: "";
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      position: absolute;
-    }
-  }
 }
 </style>

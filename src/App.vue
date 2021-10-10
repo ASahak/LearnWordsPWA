@@ -10,12 +10,20 @@
     <!--  Like mobile native functions  -->
     <NativePanel />
 
-    <div class="section-transition--wrapper">
-      <router-view v-slot="{ Component }">
-        <transition name="route" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+    <div class="section-transition--wrapper" :key="currentLang">
+      <template v-if="currentLang">
+        <router-view v-slot="{ Component }">
+          <transition name="route" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </template>
+      <div v-else class="main-loading-container">
+        <div class="lds-ripple">
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </div>
 
     <!--  Modals container  -->
@@ -23,7 +31,7 @@
   </div>
 </template>
 <script>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useStore } from "vuex";
 import { createToast } from "mosha-vue-toastify";
 import NativePanel from "@/shared/NativeOptionsTopPanel";
@@ -39,6 +47,9 @@ export default {
   setup() {
     const store = useStore();
     const modalBG = ref(null);
+
+    const currentLang = computed(() => store.getters["base/getCurrentLang"]);
+
     const toggleModalBg = (v) => (modalBG.value = v);
 
     const closeDialog = () => {
@@ -58,6 +69,7 @@ export default {
     });
 
     return {
+      currentLang,
       toggleModalBg,
       modalBG,
       closeDialog,

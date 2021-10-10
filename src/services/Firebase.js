@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import * as firestore from "firebase/firestore";
+import { LANG } from "@/utils/constants";
 
 export default class Firebase {
   static getLoggedUser() {
@@ -43,7 +44,8 @@ export default class Firebase {
       const userSnap = await getDoc(usersRef);
       if (!userSnap.exists()) {
         await setDoc(usersRef, {
-          languages: ["en"],
+          language: LANG,
+          languages: [LANG],
           words: { en: [] },
           groups: { en: [] },
         });
@@ -265,6 +267,39 @@ export default class Firebase {
       return { data: wordsData[lang] };
     } catch (err) {
       return { error: err.message };
+    }
+  }
+
+  static async changeLanguage(lang, userId) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.exists()) {
+          await t.update(usersRef, { language: lang });
+        } else throw "Can't find document";
+      });
+      return {};
+    } catch (err) {
+      return { error: err };
+    }
+  }
+
+  static async getLanguage(userId) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      return await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.exists()) {
+          return { data: userSnap.data().language };
+        } else throw "Can't find document";
+      });
+    } catch (err) {
+      return { error: err };
     }
   }
 

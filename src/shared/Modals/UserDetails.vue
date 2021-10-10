@@ -2,7 +2,7 @@
   <div class="backdrop-wrapper">
     <div class="modal-container">
       <div v-if="state.modalContent === 'main'">
-        <h3 class="title">{{ userDetails?.displayName }}</h3>
+        <h3 class="title">{{ userDetails.displayName }}</h3>
         <p class="paragraphs" @click="goToLangContent('add-language')">
           Add language
         </p>
@@ -97,13 +97,12 @@ import { useLoading } from "vue3-loading-overlay";
 import { useRouter } from "vue-router";
 import EmitterBus from "@/utils/eventBus";
 import { LANG, LANGUAGES } from "@/utils/constants";
-import Types from "@/store/modules/base/types";
 
 export default {
   name: "user-details-modal",
   setup() {
     const store = useStore();
-    const { dispatch, commit } = store;
+    const { dispatch } = store;
     let loader = useLoading();
     const indicatorRef = ref(null);
 
@@ -127,7 +126,7 @@ export default {
     });
 
     const userDetails = computed(() => {
-      return store.state.auth?.user;
+      return store.state.auth?.user || {};
     });
 
     const currentLang = computed(() => {
@@ -178,9 +177,16 @@ export default {
     };
 
     const switchLanguage = () => {
-      commit("base/" + Types.SWITCH_LANGUAGE, state.checkedLang);
-      state.modalContent = "main";
-      closeDialog();
+      state.isLoading = true;
+      dispatch("base/changeLanguage", {
+        lang: state.checkedLang,
+        cb: () => {
+          dispatch("base/setGroups", userDetails.value.uid);
+          state.isLoading = false;
+          state.modalContent = "main";
+          closeDialog();
+        },
+      });
     };
 
     const addLanguage = () => {

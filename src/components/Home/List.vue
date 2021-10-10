@@ -1,20 +1,25 @@
 <template>
   <div class="list-container">
     <LoadingIndicator v-if="isStillGettingData" />
-    <div
-      v-else
-      :class="{
-        list__item: true,
-        'list__item--updating': word.updated,
-        'list__item--deleting': word.isDeleting,
-      }"
-      v-for="word in list"
-      :key="word.publication"
-      @click="openCrud(word)"
-    >
-      <span>{{ word[currentLang] }}</span>
-      <span>{{ word.arm }}</span>
-    </div>
+    <template v-else>
+      <div v-if="!list.length" class="no-data">
+        <p>No data <span class="lnr lnr-sad"></span></p>
+      </div>
+      <div
+        v-else
+        :class="{
+          list__item: true,
+          'list__item--updating': word.updated,
+          'list__item--deleting': word.isDeleting,
+        }"
+        v-for="word in list"
+        :key="word.publication"
+        @click="openCrud(word)"
+      >
+        <span>{{ word[currentLang] }}</span>
+        <span>{{ word.arm }}</span>
+      </div>
+    </template>
   </div>
 </template>
 <script>
@@ -90,6 +95,21 @@ export default {
     box-shadow: -1px 0px 4px 1px #fff;
   }
 }
+
+.no-data {
+  & p {
+    font-weight: bold;
+    color: #9797a2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    & .lnr {
+      font-weight: 900;
+      margin-left: 6px;
+    }
+  }
+}
+
 .list-container {
   overflow-x: hidden;
   border-bottom-left-radius: 38px;

@@ -1,6 +1,6 @@
 import Types from "./types";
 import Firebase from "@/services/Firebase";
-import { LANG, BASE } from "@/utils/constants";
+import { BASE } from "@/utils/constants";
 
 export default {
   namespaced: true,
@@ -8,7 +8,7 @@ export default {
     languages: [],
     groups: [],
     selectedGroup: null,
-    lang: LANG,
+    lang: null,
     words: [],
     wordsPagesCount: null,
     stillGetting: true,
@@ -32,7 +32,6 @@ export default {
     getFilteredList:
       (state) =>
       ({ page, filters }) => {
-        // console.log(page, filters, "GETTERS");
         let words = [...state.words];
         if (filters.isGroup) {
           words = words.filter((e) => e.groupName === filters.key);
@@ -105,7 +104,7 @@ export default {
     [Types.SET_GROUPS](state, payload) {
       state.groups = payload;
     },
-    [Types.SWITCH_LANGUAGE](state, payload) {
+    [Types.SET_LANGUAGE](state, payload) {
       state.lang = payload;
     },
     [Types.SET_SELECTED_GROUP_NAME](state, payload) {
@@ -148,6 +147,17 @@ export default {
         console.error(err);
       }
     },
+    async getLanguage({ commit }, payload) {
+      try {
+        const { data, error } = await Firebase.getLanguage(payload);
+        if (error) throw error;
+        commit(Types.SET_LANGUAGE, data);
+        return {};
+      } catch (err) {
+        console.error(err);
+        return { error: err };
+      }
+    },
     async setLanguages({ commit }, payloadId) {
       try {
         const { data, error } = await Firebase.getLanguages(payloadId);
@@ -172,6 +182,7 @@ export default {
     },
     async getList({ state, rootState, commit }) {
       try {
+        commit(Types.SET_WORDS_PAGES_COUNT, null);
         const { error, words } = await Firebase.getList(
           rootState.auth.user.uid,
           state.lang
@@ -225,6 +236,24 @@ export default {
         setTimeout(() => {
           commit(Types.SET_WORDS, data);
         }, 2000);
+        return {};
+      } catch (err) {
+        console.error(err);
+        return { error: err };
+      }
+    },
+    async changeLanguage({ commit, rootState }, payload) {
+      try {
+        const { error } = await Firebase.changeLanguage(
+          payload.lang,
+          rootState.auth.user.uid
+        );
+        if (error) throw error;
+        commit(Types.SET_GROUPS, []);
+        commit(Types.SET_WORDS, []);
+        commit(Types.SET_STILL_GETTING_WORDS, true);
+        commit(Types.SET_LANGUAGE, payload.lang);
+        payload.cb();
         return {};
       } catch (err) {
         console.error(err);

@@ -1,13 +1,20 @@
 <template>
   <div class="home-wrapper">
     <Header />
-    <Filters />
+    <Filters v-if="wordsPagesCount || state.filters.searchValue" />
     <List />
   </div>
 </template>
 
 <script>
-import { onMounted, onUnmounted, reactive, provide, computed } from "vue";
+import {
+  onMounted,
+  onUnmounted,
+  reactive,
+  provide,
+  computed,
+  watch,
+} from "vue";
 import { createToast } from "mosha-vue-toastify";
 import { useStore } from "vuex";
 import Header from "@/components/Header";
@@ -26,8 +33,12 @@ export default {
     const store = useStore();
     const state = reactive({
       page: 1,
-      filters: { key: "*", isGroup: false },
+      filters: { key: "*", isGroup: false, searchValue: "" },
     });
+
+    const wordsPagesCount = computed(
+      () => store.getters["base/getWordsPagesCount"]
+    );
 
     provide(
       "page",
@@ -38,6 +49,8 @@ export default {
       "filters",
       computed(() => state.filters)
     );
+
+    const currentLang = computed(() => store.getters["base/getCurrentLang"]);
 
     const getList = () => {
       const { error } = store.dispatch("base/getList", {
@@ -52,16 +65,22 @@ export default {
       }
     };
 
-    onMounted(() => {
-      getList();
+    watch(
+      () => currentLang.value,
+      () => {
+        currentLang.value && getList();
+      },
+      { immediate: true }
+    );
 
+    onMounted(() => {
       EmitterBus.$on("change-page", (v) => {
         state.page = v;
       });
 
       EmitterBus.$on("filters", (data) => {
         state.page = 1;
-        state.filters = data;
+        state.filters = { ...state.filters, ...data };
       });
     });
 
@@ -71,6 +90,7 @@ export default {
     });
 
     return {
+      wordsPagesCount,
       state,
     };
   },
