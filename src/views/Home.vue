@@ -1,7 +1,7 @@
 <template>
   <div class="home-wrapper">
     <Header />
-    <Filters v-if="wordsPagesCount || state.filters.searchValue" />
+    <Filters v-if="mainWordsList.length" />
     <List />
   </div>
 </template>
@@ -36,9 +36,7 @@ export default {
       filters: { key: "*", isGroup: false, searchValue: "" },
     });
 
-    const wordsPagesCount = computed(
-      () => store.getters["base/getWordsPagesCount"]
-    );
+    const mainWordsList = computed(() => store.state.base.words || []);
 
     provide(
       "page",
@@ -90,8 +88,8 @@ export default {
     });
 
     return {
-      wordsPagesCount,
       state,
+      mainWordsList,
     };
   },
 };

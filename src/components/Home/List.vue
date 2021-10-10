@@ -126,10 +126,10 @@ export default {
     cursor: pointer;
     transition: 0.4s;
     &--updating {
-      animation: highlightingUpdate 2s linear 1;
+      animation: highlightingUpdate 1.5s linear 1;
     }
     &--deleting {
-      animation: highlightingDelete 2s linear 1;
+      animation: highlightingDelete 1.5s linear 1;
     }
     & span {
       padding: 4px 10px;
