@@ -4,8 +4,8 @@
       <button @click="openFilterByModal">{{ getFilterName }}</button>
     </div>
     <div class="right-side">
-      <span class="right-side__counter" v-show="wordsCount && page">
-        {{ page }} / {{ wordsCount }}</span
+      <span class="right-side__counter" v-show="wordsPagesCount && page">
+        {{ page }} / {{ wordsPagesCount }}</span
       >
       <div class="next-prev-arrows--wrapper">
         <span
@@ -15,7 +15,7 @@
         ></span>
         <span
           class="lnr lnr-chevron-right"
-          :class="{ disabled: page === wordsCount }"
+          :class="{ disabled: page === wordsPagesCount }"
           @click="changePage(1)"
         ></span>
       </div>
@@ -23,7 +23,7 @@
   </div>
 </template>
 <script>
-import { computed, inject } from "vue";
+import { computed, inject, watch } from "vue";
 import { useStore } from "vuex";
 import { FILTERS_BY } from "@/utils/constants";
 import EmitterBus from "@/utils/eventBus";
@@ -41,15 +41,26 @@ export default {
         : FILTERS_BY[filters.value.key || "*"];
     });
 
-    const wordsCount = computed(() => store.getters["base/getWordsCount"]);
+    const wordsPagesCount = computed(
+      () => store.getters["base/getWordsPagesCount"]
+    );
+
+    watch(
+      () => [wordsPagesCount.value, page.value],
+      () => {
+        if (wordsPagesCount.value < page.value) {
+          EmitterBus.$emit("change-page", wordsPagesCount.value);
+        }
+      }
+    );
 
     const changePage = (isNext) => {
       const _page = page.value;
       EmitterBus.$emit(
         "change-page",
         isNext
-          ? wordsCount.value === _page
-            ? wordsCount.value
+          ? wordsPagesCount.value === _page
+            ? wordsPagesCount.value
             : _page + 1
           : _page > 1
           ? _page - 1
@@ -68,7 +79,7 @@ export default {
       FILTERS_BY,
       getFilterName,
       page,
-      wordsCount,
+      wordsPagesCount,
       changePage,
       openFilterByModal,
     };

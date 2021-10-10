@@ -27,6 +27,7 @@
 }
 
 .mosha__toast {
+  z-index: 999999 !important;
   min-height: 54px !important;
   padding: 4px 8px !important;
 }

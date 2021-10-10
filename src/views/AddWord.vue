@@ -68,7 +68,7 @@
   </div>
 </template>
 <script>
-import { computed, onUnmounted, reactive, ref, watchEffect } from "vue";
+import { computed, onUnmounted, reactive, ref, watch } from "vue";
 import { required } from "@vuelidate/validators";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
@@ -98,16 +98,19 @@ export default {
       ifExistingSameWord: null,
     });
 
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
-    });
+    watch(
+      () => state.isLoading,
+      () => {
+        if (state.isLoading) {
+          loader.show({
+            container: indicatorRef.value,
+            height: 18,
+            width: 18,
+            color: "#191675",
+          });
+        } else loader.hide();
+      }
+    );
 
     const currentLang = computed(() => {
       return store.getters["base/getCurrentLang"] || LANG;

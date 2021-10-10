@@ -3,7 +3,11 @@
     <LoadingIndicator v-if="isStillGettingData" />
     <div
       v-else
-      class="list__item"
+      :class="{
+        list__item: true,
+        'list__item--updating': word.updated,
+        'list__item--deleting': word.isDeleting,
+      }"
       v-for="word in list"
       :key="word.publication"
       @click="openCrud(word)"
@@ -40,7 +44,7 @@ export default {
         filters: filters.value,
       });
       store.commit(
-        "base/" + BaseTypes.SET_WORDS_PAGE_COUNT,
+        "base/" + BaseTypes.SET_WORDS_PAGES_COUNT,
         Math.ceil(length / BASE.listLimit)
       );
       return data;
@@ -62,6 +66,30 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@keyframes highlightingUpdate {
+  0% {
+    box-shadow: -1px 0px 4px 1px #fff;
+  }
+  50% {
+    box-shadow: -1px 0px 4px 1px #00ad454d;
+    background: #00ad454d;
+  }
+  100% {
+    box-shadow: -1px 0px 4px 1px #fff;
+  }
+}
+@keyframes highlightingDelete {
+  0% {
+    box-shadow: -1px 0px 4px 1px #fff;
+  }
+  50% {
+    box-shadow: -1px 0px 4px 1px #d7022d7a;
+    background: #d7022d7a;
+  }
+  100% {
+    box-shadow: -1px 0px 4px 1px #fff;
+  }
+}
 .list-container {
   overflow-x: hidden;
   border-bottom-left-radius: 38px;
@@ -76,6 +104,13 @@ export default {
     grid-template-columns: repeat(2, 1fr);
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    transition: 0.4s;
+    &--updating {
+      animation: highlightingUpdate 2s linear 1;
+    }
+    &--deleting {
+      animation: highlightingDelete 2s linear 1;
+    }
     & span {
       padding: 4px 10px;
       font-size: 14px;

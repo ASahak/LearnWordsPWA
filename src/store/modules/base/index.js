@@ -10,7 +10,7 @@ export default {
     selectedGroup: null,
     lang: LANG,
     words: [],
-    wordsCount: null,
+    wordsPagesCount: null,
     stillGetting: true,
   },
   getters: {
@@ -26,8 +26,8 @@ export default {
     getSelectedGroupName(state) {
       return state.selectedGroup;
     },
-    getWordsCount(state) {
-      return state.wordsCount;
+    getWordsPagesCount(state) {
+      return state.wordsPagesCount;
     },
     getFilteredList:
       (state) =>
@@ -121,17 +121,14 @@ export default {
       );
       if (findItemIndex > -1) {
         wordsClone[findItemIndex] = {
-          isLearned: payload.isLearned,
-          groupName: payload.groupName,
-          [payload.lang]: payload.word1,
-          arm: payload.word2,
-          publication: payload.publication,
+          ...wordsClone[findItemIndex],
+          ...payload,
         };
       }
       state.words = wordsClone;
     },
-    [Types.SET_WORDS_PAGE_COUNT](state, payload) {
-      state.wordsCount = payload;
+    [Types.SET_WORDS_PAGES_COUNT](state, payload) {
+      state.wordsPagesCount = payload;
     },
     [Types.SET_STILL_GETTING_WORDS](state, payload) {
       state.stillGetting = payload;
@@ -181,7 +178,7 @@ export default {
         );
         if (error) throw error;
         commit(
-          Types.SET_WORDS_PAGE_COUNT,
+          Types.SET_WORDS_PAGES_COUNT,
           Math.ceil(words.length / BASE.listLimit)
         );
         commit(Types.SET_WORDS, words);
@@ -197,7 +194,37 @@ export default {
       try {
         const { error } = await Firebase.updateWord({ ...payload });
         if (error) throw error;
-        commit(Types.UPDATE_WORD, { ...payload });
+        commit(Types.UPDATE_WORD, {
+          isLearned: payload.isLearned,
+          groupName: payload.groupName,
+          [payload.lang]: payload.word1,
+          arm: payload.word2,
+          publication: payload.publication,
+          updated: true,
+        });
+        setTimeout(() => {
+          commit(Types.UPDATE_WORD, {
+            publication: payload.publication,
+            updated: false,
+          });
+        }, 2000);
+        return {};
+      } catch (err) {
+        console.error(err);
+        return { error: err };
+      }
+    },
+    async deleteWord({ commit }, payload) {
+      try {
+        const { error, data } = await Firebase.deleteWord({ ...payload });
+        if (error) throw error;
+        commit(Types.UPDATE_WORD, {
+          publication: payload.publication,
+          isDeleting: true,
+        });
+        setTimeout(() => {
+          commit(Types.SET_WORDS, data);
+        }, 2000);
         return {};
       } catch (err) {
         console.error(err);

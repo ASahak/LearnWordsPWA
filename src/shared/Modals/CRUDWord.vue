@@ -79,10 +79,16 @@
           I have learned this already
         </label>
         <div class="modal-actions-wrapper">
-          <button class="btn btn--danger modal-btn">Delete</button>
-          <button class="btn btn--default modal-btn" @click="updateWord">
-            Update
-          </button>
+          <div ref="indicatorDeleteRef" class="indicator-container">
+            <button class="btn btn--danger modal-btn" @click="deleteWord">
+              {{ state.isDeleting ? "" : "Delete" }}
+            </button>
+          </div>
+          <div ref="indicatorUpdateRef" class="indicator-container">
+            <button class="btn btn--default modal-btn" @click="updateWord">
+              {{ state.isUpdating ? "" : "Update" }}
+            </button>
+          </div>
         </div>
       </div>
       <div class="group-list" v-else>
@@ -115,16 +121,17 @@
   </div>
 </template>
 <script>
-import { computed, reactive, toRef, watch } from "vue";
+import { computed, reactive, ref, toRef, watch } from "vue";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
+import { createToast } from "mosha-vue-toastify";
+import { useLoading } from "vue3-loading-overlay";
 import { required } from "@vuelidate/validators";
 import { format } from "date-fns";
 import { LANG } from "@/utils/constants";
-import { createDebounce, resetState } from "@/utils/handlers";
+import { createDebounce } from "@/utils/handlers";
 import Firebase from "@/services/Firebase";
 import EmitterBus from "@/utils/eventBus";
-import { createToast } from "mosha-vue-toastify";
 
 export default {
   name: "crud-word-modal",
@@ -137,16 +144,36 @@ export default {
   setup(props) {
     const store = useStore();
     const dataWord = toRef(props, "data");
+    const indicatorUpdateRef = ref(null);
+    const indicatorDeleteRef = ref(null);
+    let loader = useLoading();
 
     const state = reactive({
       lang: "",
       arm: "",
       groupName: null,
       ifExistingSameWord: null,
-      isLoading: false,
+      isUpdating: false,
+      isDeleting: false,
       isLearned: false,
       groupView: false,
     });
+
+    watch(
+      () => [state.isUpdating, state.isDeleting],
+      () => {
+        if (state.isUpdating || state.isDeleting) {
+          loader.show({
+            container: state.isDeleting
+              ? indicatorDeleteRef.value
+              : indicatorUpdateRef.value,
+            height: 18,
+            width: 18,
+            color: "#191675",
+          });
+        } else loader.hide();
+      }
+    );
 
     const currentLang = computed(() => {
       return store.getters["base/getCurrentLang"] || LANG;
@@ -222,10 +249,31 @@ export default {
       }
     };
 
-    const updateWord = () => {
+    const deleteWord = async () => {
+      try {
+        state.isDeleting = true;
+        const { error } = await store.dispatch("base/deleteWord", {
+          userId: userId.value,
+          publication: dataWord.value.publication,
+          lang: currentLang.value,
+        });
+        if (error) throw error;
+        EmitterBus.$emit("toggle-modal", null);
+      } catch (err) {
+        createToast(err.message || err, {
+          type: "danger",
+          hideProgressBar: true,
+        });
+      } finally {
+        state.isDeleting = false;
+      }
+    };
+
+    const updateWord = async () => {
       try {
         const { isLearned, arm, lang, groupName } = state;
-        const { error } = store.dispatch("base/updateWord", {
+        state.isUpdating = true;
+        const { error } = await store.dispatch("base/updateWord", {
           isLearned,
           word1: lang,
           word2: arm,
@@ -235,21 +283,14 @@ export default {
           lang: currentLang.value,
         });
         if (error) throw error;
-        resetState(state, [
-          "lang",
-          "arm",
-          "groupName",
-          "ifExistingSameWord",
-          "isLoading",
-          "isLearned",
-          "groupView",
-        ]);
         EmitterBus.$emit("toggle-modal", null);
       } catch (err) {
         createToast(err.message || err, {
           type: "danger",
           hideProgressBar: true,
         });
+      } finally {
+        state.isUpdating = false;
       }
     };
 
@@ -267,9 +308,12 @@ export default {
       goBack,
       closeDialog,
       updateWord,
+      deleteWord,
       resetGroupName,
       format,
       state,
+      indicatorUpdateRef,
+      indicatorDeleteRef,
       currentLangCapitalize,
       debounce: createDebounce(),
     };
@@ -287,7 +331,11 @@ export default {
 
 .modal-actions-wrapper {
   margin: 20px 0 5px;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  & .btn {
+    height: 100%;
+  }
   & .btn--danger {
     margin-right: 10px;
   }

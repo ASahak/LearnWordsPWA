@@ -13,7 +13,9 @@ export default {
   setup() {
     const store = useStore();
 
-    const wordsCount = computed(() => store.getters["base/getWordsCount"]);
+    const wordsPagesCount = computed(
+      () => store.getters["base/getWordsPagesCount"]
+    );
 
     return () =>
       h(
@@ -21,7 +23,7 @@ export default {
         {
           class: {
             "filters-container": true,
-            "still-getting-data": !wordsCount.value,
+            "still-getting-data": !wordsPagesCount.value,
           },
         },
         <>

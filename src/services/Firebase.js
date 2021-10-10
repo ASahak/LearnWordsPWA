@@ -238,29 +238,36 @@ export default class Firebase {
       return { error: err.message };
     }
   }
-  //
-  // static async deleteWord(lang, userId, publication) {
-  //   try {
-  //     const docRef = firebase.firestore().collection("users").doc(userId);
-  //     return await firebase.firestore().runTransaction((transaction) => {
-  //       return transaction.get(docRef).then((snapshot) => {
-  //         const largerArray = snapshot.get("words");
-  //         const findIndex = largerArray[lang].findIndex(
-  //           (e) => e.publication === publication
-  //         );
-  //         if (findIndex > -1) {
-  //           largerArray[lang].splice(findIndex, 1);
-  //           transaction.update(docRef, "words", largerArray);
-  //         } else {
-  //           throw "Can't find this word on cloud firestore";
-  //         }
-  //       });
-  //     });
-  //   } catch (err) {
-  //     return { error: err.message };
-  //   }
-  // }
-  //
+
+  static async deleteWord({ lang, userId, publication }) {
+    try {
+      const { getFirestore, doc, runTransaction } = firestore;
+      const db = getFirestore();
+      const usersRef = doc(db, "users", userId);
+      let wordsData;
+      await runTransaction(db, async (t) => {
+        const userSnap = await t.get(usersRef);
+        if (userSnap.exists()) {
+          const baseData = { ...userSnap.data() };
+
+          wordsData = baseData.words;
+          const itemIndex = wordsData[lang].findIndex(
+            (e) => e.publication === publication
+          );
+          if (itemIndex > -1) {
+            wordsData[lang].splice(itemIndex, 1);
+            await t.update(usersRef, { words: wordsData });
+          } else {
+            throw "Can't find this word on cloud firestore";
+          }
+        }
+      });
+      return { data: wordsData[lang] };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
   static async addWord(lang, word1, word2, userId, groupName) {
     try {
       const { getFirestore, doc, runTransaction } = firestore;
