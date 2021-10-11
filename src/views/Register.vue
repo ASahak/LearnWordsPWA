@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationHeader title="Register" />
+    <NavigationHeader title="Register" prev="/login" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Create an account</h1>

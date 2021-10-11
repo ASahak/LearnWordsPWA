@@ -35,7 +35,7 @@ export default {
           const { displayName, uid } = loggedUser;
           userData = { displayName, uid };
         } else {
-          if (payload.byRoot) return;
+          if (payload.byRoot) return {};
           const data = await Firebase.loginUser({ ...payload });
           if (data.error) throw data.error;
           userData = data;

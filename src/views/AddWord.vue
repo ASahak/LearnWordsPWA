@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationHeader title="Add word" />
+    <NavigationHeader title="Add word" prev="/" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Add word</h1>

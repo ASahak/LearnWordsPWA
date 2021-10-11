@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationHeader title="Reset password" />
+    <NavigationHeader title="Reset password" prev="/login" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Reset Password</h1>

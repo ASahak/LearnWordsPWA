@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationHeader title="Add group" />
+    <NavigationHeader title="Add group" prev="/add-word" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Add group</h1>

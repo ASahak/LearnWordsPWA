@@ -1,14 +1,13 @@
 <template>
   <div class="nav-header--container">
-    <span
-      class="lnr lnr-arrow-left"
-      v-if="isHistoryBack"
-      @click="goBack"
-    ></span>
+    <span class="lnr lnr-arrow-left" v-if="prevPath" @click="goBack"></span>
     <h1>{{ title }}</h1>
   </div>
 </template>
 <script>
+import { toRef } from "vue";
+import { useRouter } from "vue-router";
+
 export default {
   name: "navigation-header",
   props: {
@@ -16,13 +15,19 @@ export default {
       type: String,
       required: true,
     },
+    prev: {
+      type: String,
+      required: false,
+    },
   },
-  setup() {
-    const isHistoryBack = history.state.back;
-    const goBack = () => history.back();
+  setup(props) {
+    const prevPath = toRef(props, "prev");
+    const router = useRouter();
+
+    const goBack = () => router.push(prevPath.value);
 
     return {
-      isHistoryBack,
+      prevPath,
       goBack,
     };
   },
