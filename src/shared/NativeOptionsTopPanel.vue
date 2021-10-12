@@ -53,7 +53,7 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss" scoped>
 .native--panel {
   display: flex;
   justify-content: space-between;
@@ -62,6 +62,11 @@ export default {
   align-items: center;
   height: 26px;
   font-weight: 600;
+  @media only screen and (max-width: 991px) {
+    & {
+      display: none;
+    }
+  }
 }
 
 .right-native--panel {

@@ -116,6 +116,9 @@ export default {
   border-bottom-right-radius: 38px;
   margin-bottom: 3px;
   position: relative;
+  @media only screen and (max-width: 991px) {
+    border-radius: 0px;
+  }
   &::-webkit-scrollbar {
     width: 0px;
   }
