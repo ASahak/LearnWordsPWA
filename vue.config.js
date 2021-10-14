@@ -11,12 +11,20 @@ module.exports = {
     },
   },
   pwa: {
-    name: "Learn Words PWA",
-    themeColor: "#4DBA87",
+    name: "LearnWords",
+    themeColor: "#eaeaea",
     msTileColor: "#000000",
     appleMobileWebAppCapable: "yes",
     appleMobileWebAppStatusBarStyle: "black",
-
+    orientation: "portrait-primary",
+    start_url: "/index.html",
+    icons: [
+      {
+        src: "/img/logoNative.png",
+        type: "image/png",
+        sizes: "96x96",
+      },
+    ],
     // configure the workbox plugin
     workboxPluginMode: "InjectManifest",
     workboxOptions: {

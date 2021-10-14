@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main-view-grid">
     <NavigationHeader title="Add group" prev="/add-word" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Add group</h1>
         <p>Add group to filtering words by their type</p>
       </div>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="grid-view__form">
         <font-awesome-icon icon="object-group" class="entry-icon" />
         <div
           :class="['input-container', { 'error-field': v$.groupName.$error }]"
@@ -110,7 +110,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .entry-container {
-  padding: 10px 30px;
+  @extend .entry-container_extend;
 }
 
 .like-input-container {

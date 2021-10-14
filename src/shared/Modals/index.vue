@@ -1,5 +1,5 @@
 <template>
-  <div class="modals-container">
+  <div class="modals-container" @click="closeModal">
     <transition
       name="modal"
       mode="out-in"
@@ -35,6 +35,12 @@ export default {
 
     const afterLeave = () => context.emit("toggle-modal-bg-image", false);
 
+    const closeModal = ({ target }) => {
+      if (!target.closest(".modal-container")) {
+        ModalComponent.value = null;
+      }
+    };
+
     onMounted(() => {
       EmitterBus.$on("toggle-modal", (v, data) => {
         ModalComponent.value = v;
@@ -45,6 +51,7 @@ export default {
     return {
       props,
       ModalComponent,
+      closeModal,
       beforeEnter,
       afterLeave,
     };

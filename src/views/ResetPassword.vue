@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main-view-grid">
     <NavigationHeader title="Reset password" prev="/login" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Reset Password</h1>
         <p>Send your email for reset!</p>
       </div>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="grid-view__form">
         <font-awesome-icon icon="key" class="entry-icon" />
         <div :class="['input-container', { 'error-field': v$.email.$error }]">
           <label>E-mail</label>
@@ -109,25 +109,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.title-container {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  text-align: left;
-  & p {
-    font-size: 12px;
-    color: #888484;
-    margin: 0;
-  }
-  & h1 {
-    font-size: 30px;
-    font-weight: bold;
-    color: $titleColor;
-    margin: 0;
-  }
+.entry-container {
+  @extend .entry-container_extend;
 }
 
-.entry-container {
-  padding: 10px 30px;
+.title-container {
+  @extend .title-entry-container_extend;
 }
 
 .entry-btn {

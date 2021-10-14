@@ -33,7 +33,7 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss">
 .nav-header--container {
   box-shadow: 0 4px 3px -4px grey;
   display: flex;

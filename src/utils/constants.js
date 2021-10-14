@@ -23,7 +23,7 @@ export const FILTERS_BY = {
 };
 
 export const BASE = {
-  listLimit: 20,
+  listLimit: 25,
 };
 
 export const WHITE_LIST = ["login", "register", "reset-password"];

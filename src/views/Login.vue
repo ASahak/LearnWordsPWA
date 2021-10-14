@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main-view-grid">
     <NavigationHeader title="Login" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Welcome back</h1>
         <p>Sign in to continue</p>
       </div>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="grid-view__form">
         <font-awesome-icon icon="user" class="entry-icon" />
         <div :class="['input-container', { 'error-field': v$.email.$error }]">
           <label>E-mail</label>
@@ -135,12 +135,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.title-container {
-  @extend .title-entry-container_extend;
+.entry-container {
+  @extend .entry-container_extend;
 }
 
-.entry-container {
-  padding: 10px 30px;
+.title-container {
+  @extend .title-entry-container_extend;
 }
 
 .entry-btn {

@@ -357,7 +357,7 @@ export default {
     width: 100%;
     outline: none;
     color: rgb(117, 117, 117);
-    padding: 8px 8px 8px 30px;
+    padding: 10px 10px 10px 30px;
     position: relative;
     & .cancel-value {
       font-size: 13px;

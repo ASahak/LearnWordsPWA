@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main-view-grid">
     <NavigationHeader title="Add word" prev="/" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Add word</h1>
         <p>Add word and let's learn it together</p>
       </div>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="grid-view__form">
         <font-awesome-icon icon="book" class="entry-icon" />
         <div
           :class="[
@@ -210,7 +210,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .entry-container {
-  padding: 10px 30px;
+  @extend .entry-container_extend;
 }
 
 .like-input-container {
@@ -224,7 +224,7 @@ export default {
     width: 100%;
     outline: none;
     color: rgb(117, 117, 117);
-    padding: 8px 8px 8px 30px;
+    padding: 10px 10px 10px 30px;
     &.value--selected {
       color: #000;
     }

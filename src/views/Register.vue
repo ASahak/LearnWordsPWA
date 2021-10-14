@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main-view-grid">
     <NavigationHeader title="Register" prev="/login" />
     <div class="entry-container">
       <div class="title-container">
         <h1>Create an account</h1>
         <p>Create to make your life easy</p>
       </div>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="grid-view__form">
         <div
           :class="['input-container', { 'error-field': v$.username.$error }]"
         >
@@ -163,12 +163,12 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.title-container {
-  @extend .title-entry-container_extend;
+.entry-container {
+  @extend .entry-container_extend;
 }
 
-.entry-container {
-  padding: 10px 30px;
+.title-container {
+  @extend .title-entry-container_extend;
 }
 
 .entry-btn {
