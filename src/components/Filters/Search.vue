@@ -2,7 +2,7 @@
   <div class="search-input--wrapper">
     <input
       v-model="state.searchValue"
-      @input="debounce(searchWord, 500)"
+      @input="debounce(searchWord.bind(null, $event), 500)"
       type="text"
       placeholder="Find word..."
     />
@@ -20,7 +20,9 @@ export default {
       searchValue: "",
     });
 
-    const searchWord = () => {
+    const searchWord = (e) => {
+      state.searchValue = e.target.value;
+      console.log(state.searchValue, e);
       EmitterBus.$emit("filters", { searchValue: state.searchValue });
     };
 

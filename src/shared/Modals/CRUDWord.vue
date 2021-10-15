@@ -5,13 +5,13 @@
         Edit word
         <span
           class="lnr lnr-cross modal-close-icon"
-          @click="closeDialog"
+          @click.stop="closeDialog"
         ></span>
       </h3>
       <font-awesome-icon
         v-else
         icon="arrow-left"
-        @click="goBack"
+        @click.stop="goBack"
         class="back-btn"
       />
       <div v-if="!state.groupView">
@@ -50,7 +50,7 @@
             {{ v$.arm.$errors[0].$message }}
           </p>
         </div>
-        <div class="like-input-container" @click="goToGroupView">
+        <div class="like-input-container" @click.stop="goToGroupView">
           <label>Group name</label>
           <p :class="{ 'value--selected': state.groupName }">
             <font-awesome-icon icon="object-group" class="input-icon" />
@@ -80,12 +80,12 @@
         </label>
         <div class="modal-actions-wrapper">
           <div ref="indicatorDeleteRef" class="indicator-container">
-            <button class="btn btn--danger modal-btn" @click="deleteWord">
+            <button class="btn btn--danger modal-btn" @click.stop="deleteWord">
               {{ state.isDeleting ? "" : "Delete" }}
             </button>
           </div>
           <div ref="indicatorUpdateRef" class="indicator-container">
-            <button class="btn btn--default modal-btn" @click="updateWord">
+            <button class="btn btn--default modal-btn" @click.stop="updateWord">
               {{ state.isUpdating ? "" : "Update" }}
             </button>
           </div>
@@ -111,7 +111,7 @@
           <button
             :disabled="!state.groupName"
             class="btn btn--default modal-btn"
-            @click="selectGroupName"
+            @click.stop="selectGroupName"
           >
             Select
           </button>

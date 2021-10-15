@@ -3,18 +3,18 @@
     <div class="modal-container">
       <div v-if="state.modalContent === 'main'">
         <h3 class="title">{{ userDetails.displayName }}</h3>
-        <p class="paragraphs" @click="goToLangContent('add-language')">
+        <p class="paragraphs" @click.stop="goToLangContent('add-language')">
           Add language
         </p>
         <p
           class="paragraphs"
           v-if="languages.length > 1"
-          @click="goToLangContent('switch-language')"
+          @click.stop="goToLangContent('switch-language')"
         >
           Switch language
         </p>
-        <p class="paragraphs" @click="logOut">Log out</p>
-        <button class="btn btn--default modal-btn" @click="closeDialog">
+        <p class="paragraphs" @click.stop="logOut">Log out</p>
+        <button class="btn btn--default modal-btn" @click.stop="closeDialog">
           Close
         </button>
       </div>
@@ -22,7 +22,7 @@
       <div v-else-if="state.modalContent === 'add-language'">
         <font-awesome-icon
           icon="arrow-left"
-          @click="goToMain"
+          @click.stop="goToMain"
           class="back-btn"
         />
         <p v-if="!userLangsForAdding">No Languages</p>
@@ -46,7 +46,7 @@
             <button
               :disabled="!state.checkedLang"
               class="btn btn--default modal-btn"
-              @click="addLanguage"
+              @click.stop="addLanguage"
             >
               {{ !state.isLoading ? "Add" : "" }}
             </button>
@@ -57,7 +57,7 @@
       <div v-else-if="state.modalContent === 'switch-language'">
         <font-awesome-icon
           icon="arrow-left"
-          @click="goToMain"
+          @click.stop="goToMain"
           class="back-btn"
         />
         <div class="languages-list">
@@ -80,7 +80,7 @@
                 !state.checkedLang || currentLang === state.checkedLang
               "
               class="btn btn--default modal-btn"
-              @click="switchLanguage"
+              @click.stop="switchLanguage"
             >
               {{ !state.isLoading ? "Switch" : "" }}
             </button>

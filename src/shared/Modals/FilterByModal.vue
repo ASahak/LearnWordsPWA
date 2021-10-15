@@ -5,7 +5,7 @@
       <font-awesome-icon
         v-else
         icon="arrow-left"
-        @click="goBack"
+        @click.stop="goBack"
         class="back-btn"
       />
       <div class="filter-by-list">
@@ -76,13 +76,16 @@ export default {
 
     const changeFilterName = (filter) => {
       if (filter === "group-by") {
-        state.checkedFilter = null;
+        state.checkedFilter = filtersPropData.value.isGroup
+          ? filtersPropData.value.key
+          : null;
         state.groupPage = true;
       } else state.checkedFilter = filter;
     };
-
-    const goBack = () => {
-      state.checkedFilter = null;
+    const goBack = async () => {
+      state.checkedFilter = filtersPropData.value.isGroup
+        ? null
+        : filtersPropData.value.key;
       state.groupPage = false;
     };
 

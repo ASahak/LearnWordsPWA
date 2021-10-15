@@ -21,7 +21,7 @@
         <button
           :disabled="!state.checkedGroup"
           class="btn btn--default modal-btn"
-          @click="selectGroupName"
+          @click.stop="selectGroupName"
         >
           Select
         </button>
