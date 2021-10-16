@@ -13,6 +13,7 @@ module.exports = {
   pwa: {
     name: "LearnWords",
     themeColor: "#eaeaea",
+    display: "standalone",
     msTileColor: "#000000",
     appleMobileWebAppCapable: "yes",
     appleMobileWebAppStatusBarStyle: "black",
@@ -29,7 +30,7 @@ module.exports = {
     workboxPluginMode: "InjectManifest",
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
-      swSrc: "registerServiceWorker.js",
+      swSrc: "src/registerServiceWorker.js",
     },
   },
 };
