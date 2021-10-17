@@ -13,7 +13,6 @@ module.exports = {
   pwa: {
     name: "LearnWords",
     themeColor: "#eaeaea",
-    display: "standalone",
     msTileColor: "#000000",
     appleMobileWebAppCapable: "yes",
     appleMobileWebAppStatusBarStyle: "black",
@@ -21,16 +20,25 @@ module.exports = {
     start_url: "/index.html",
     icons: [
       {
-        src: "/img/logoNative.png",
+        src: "/img/icons/favicon-32x32.png",
         type: "image/png",
-        sizes: "96x96",
+        sizes: "32x32",
+      },
+      {
+        src: "/img/icons/favicon-16x16.png",
+        type: "image/png",
+        sizes: "16x16",
       },
     ],
-    // configure the workbox plugin
-    workboxPluginMode: "InjectManifest",
-    workboxOptions: {
-      // swSrc is required in InjectManifest mode.
-      swSrc: "src/registerServiceWorker.js",
+    iconPaths: {
+      favicon32: "img/icons/favicon-32x32.png",
+      favicon16: "img/icons/favicon-16x16.png",
+      appleTouchIcon: "favicon.ico",
+      maskIcon: "favicon.ico",
+      msTileImage: "favicon.ico",
+    },
+    manifestOptions: {
+      theme_color: "#eaeaea",
     },
   },
 };
