@@ -127,6 +127,7 @@ export default {
     grid-template-columns: repeat(2, 1fr);
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    word-break: break-word;
     transition: 0.4s;
     &--updating {
       animation: highlightingUpdate 1.5s linear 1;
