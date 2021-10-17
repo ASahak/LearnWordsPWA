@@ -119,7 +119,6 @@ export default {
 
 .title-container {
   @extend .title-entry-container_extend;
-  margin-bottom: 100px;
 }
 
 .entry-icon {
