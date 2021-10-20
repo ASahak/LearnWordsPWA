@@ -23,7 +23,7 @@
   </div>
 </template>
 <script>
-import { inject, computed } from "vue";
+import { inject, computed, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import BaseTypes from "@/store/modules/base/types";
 import { BASE } from "@/utils/constants";
@@ -58,6 +58,10 @@ export default {
     const openCrud = (word) => {
       EmitterBus.$emit("toggle-modal", "crud-word-modal", { data: word });
     };
+
+    onUnmounted(() => {
+      EmitterBus.$emit("toggle-modal", null);
+    });
 
     return {
       page,

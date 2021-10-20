@@ -22,7 +22,6 @@ export default {
 
     const searchWord = (e) => {
       state.searchValue = e.target.value;
-      console.log(state.searchValue, e);
       EmitterBus.$emit("filters", { searchValue: state.searchValue });
     };
 

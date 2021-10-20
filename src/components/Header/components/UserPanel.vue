@@ -1,5 +1,5 @@
 <script>
-import { h, computed } from "vue";
+import { h, computed, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import EmitterBus from "@/utils/eventBus";
 
@@ -14,6 +14,10 @@ export default {
           .map((e) => e.charAt(0).toUpperCase())
           .join("") || ""
       );
+    });
+
+    onUnmounted(() => {
+      EmitterBus.$emit("toggle-modal", null);
     });
 
     return () =>

@@ -145,6 +145,10 @@ export default {
       store.commit("base/" + Types.SET_SELECTED_GROUP_NAME, null);
     });
 
+    onUnmounted(() => {
+      EmitterBus.$emit("toggle-modal", null);
+    });
+
     return {
       v$,
       indicatorRef,

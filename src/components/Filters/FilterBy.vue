@@ -23,7 +23,7 @@
   </div>
 </template>
 <script>
-import { computed, inject, watch } from "vue";
+import { computed, inject, onUnmounted, watch } from "vue";
 import { useStore } from "vuex";
 import { FILTERS_BY } from "@/utils/constants";
 import EmitterBus from "@/utils/eventBus";
@@ -78,6 +78,10 @@ export default {
         filters,
       });
     };
+
+    onUnmounted(() => {
+      EmitterBus.$emit("toggle-modal", null);
+    });
 
     return {
       FILTERS_BY,
