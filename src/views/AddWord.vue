@@ -180,7 +180,11 @@ export default {
       let allowingReset = true;
       try {
         const isValid = await this.v$.$validate();
-        if (!isValid || !this.state.sameWordChecking) {
+        if (
+          !isValid ||
+          this.state.ifExistingSameWord ||
+          this.state.sameWordChecking
+        ) {
           allowingReset = false;
           return;
         }

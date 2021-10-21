@@ -2,7 +2,7 @@
   <div class="top-panel--wrapper">
     <UserPanel />
     <img src="/img/logoNative.png" alt="logo" class="app-logo" />
-    <router-link to="/add-word" class="add-word-link">
+    <router-link to="/add-word" class="add-word-link" tabindex="-1">
       <span class="lnr lnr-cross"></span>
     </router-link>
   </div>

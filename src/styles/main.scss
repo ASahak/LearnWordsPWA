@@ -21,6 +21,9 @@
 
 .indicator-container {
   position: relative;
+  & .vld-overlay.is-active {
+    outline: none;
+  }
 }
 
 .indicator-container .vld-icon {
