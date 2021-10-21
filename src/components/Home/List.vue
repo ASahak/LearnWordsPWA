@@ -56,6 +56,7 @@ export default {
     });
 
     const openCrud = (word) => {
+      if (word.updated || word.isDeleting) return;
       EmitterBus.$emit("toggle-modal", "crud-word-modal", { data: word });
     };
 

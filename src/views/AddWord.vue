@@ -10,7 +10,7 @@
         <font-awesome-icon icon="book" class="entry-icon" />
         <div
           :class="[
-            'input-container',
+            'input-container checking-same-word-field',
             { 'error-field': v$.lang.$error || state.ifExistingSameWord },
           ]"
         >
@@ -21,8 +21,12 @@
             type="text"
             :placeholder="'Type the word by ' + currentLang"
             v-model="state.lang"
-            @keyup="debounce(checkExisting, 500)"
+            @input="debounce(checkExisting, 50)"
           />
+          <div
+            ref="checkingIndicatorRef"
+            class="indicator-container custom-indicator"
+          ></div>
           <p
             v-if="v$.lang.$error || state.ifExistingSameWord"
             class="error-msg"
@@ -90,18 +94,27 @@ export default {
     const store = useStore();
     let loader = useLoading();
     const indicatorRef = ref(null);
+    const checkingIndicatorRef = ref(null);
 
     const state = reactive({
       lang: "",
       arm: "",
       isLoading: false,
       ifExistingSameWord: null,
+      sameWordChecking: false,
     });
 
     watch(
-      () => state.isLoading,
+      () => [state.isLoading, state.sameWordChecking],
       () => {
-        if (state.isLoading) {
+        if (state.sameWordChecking) {
+          loader.show({
+            container: checkingIndicatorRef.value,
+            height: 14,
+            width: 14,
+            color: "#191675",
+          });
+        } else if (state.isLoading) {
           loader.show({
             container: indicatorRef.value,
             height: 18,
@@ -151,6 +164,7 @@ export default {
 
     return {
       v$,
+      checkingIndicatorRef,
       indicatorRef,
       state,
       currentLang,
@@ -163,9 +177,13 @@ export default {
   },
   methods: {
     async onSubmit() {
+      let allowingReset = true;
       try {
         const isValid = await this.v$.$validate();
-        if (!isValid || this.state.ifExistingSameWord) return;
+        if (!isValid || !this.state.sameWordChecking) {
+          allowingReset = false;
+          return;
+        }
         this.state.isLoading = true;
         const { error } = await this.$store.dispatch("auth/addWord", {
           lang: this.state.lang,
@@ -185,15 +203,18 @@ export default {
           hideProgressBar: true,
         });
       } finally {
-        resetState(this.state, ["lang", "arm"]);
-        await this.$nextTick(() => {
-          this.state.isLoading = false;
-          this.v$.$reset();
-        });
+        if (allowingReset) {
+          resetState(this.state, ["lang", "arm"]);
+          await this.$nextTick(() => {
+            this.state.isLoading = false;
+            this.v$.$reset();
+          });
+        }
       }
     },
     async checkExisting() {
       try {
+        this.state.sameWordChecking = true;
         const { error } = await Firebase.checkExistingWord(
           this.currentLang,
           this.state.lang,
@@ -204,6 +225,8 @@ export default {
       } catch (err) {
         console.error(err);
         this.state.ifExistingSameWord = err.message || err;
+      } finally {
+        this.state.sameWordChecking = false;
       }
     },
     openGroupsModal() {
@@ -232,6 +255,19 @@ export default {
     &.value--selected {
       color: #000;
     }
+  }
+}
+
+.custom-indicator {
+  height: 14px;
+  width: 14px;
+  position: absolute;
+  right: 0;
+}
+
+.checking-same-word-field {
+  & input {
+    padding-right: 18px;
   }
 }
 
