@@ -66,13 +66,13 @@
             {{ v$.confirm_password.$errors[0].$message }}
           </p>
         </div>
-        <div ref="indicatorRef" class="indicator-container">
+        <loading-spinner :active="state.isLoading" dir="center">
           <input
             type="submit"
             :value="!state.isLoading ? 'Sign Up' : ''"
             class="entry-btn"
           />
-        </div>
+        </loading-spinner>
         <p class="dont-have-account">
           Have an account? &nbsp;
           <router-link to="/login" class="entry-links"> Sign In</router-link>
@@ -82,40 +82,27 @@
   </div>
 </template>
 <script>
-import { reactive, computed, ref, watchEffect } from "vue";
+import { reactive, computed } from "vue";
 import { mapActions } from "vuex";
-import { useLoading } from "vue3-loading-overlay";
 import useVuelidate from "@vuelidate/core";
 import { required, email, sameAs, minLength } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
+import { LoadingSpinner } from "@/shared/UI";
 import { createToast } from "mosha-vue-toastify";
 
 export default {
   name: "register",
   components: {
+    LoadingSpinner,
     NavigationHeader,
   },
   setup() {
-    const indicatorRef = ref(null);
-    let loader = useLoading();
-
     const state = reactive({
       username: "",
       email: "",
       password: "",
       confirm_password: "",
       isLoading: false,
-    });
-
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
     });
 
     const rules = computed(() => ({
@@ -127,7 +114,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$, indicatorRef };
+    return { state, v$ };
   },
   methods: {
     ...mapActions("auth", ["registerUser", "setUserData"]),

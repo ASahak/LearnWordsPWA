@@ -16,17 +16,19 @@
         >
           <label>{{ currentLangCapitalize }}</label>
           <font-awesome-icon icon="file-word" class="input-icon" />
-          <input
-            name="text-lang"
-            type="text"
-            :placeholder="'Type the word by ' + currentLang"
-            v-model="state.lang"
-            @input="debounce(checkExisting, 50)"
-          />
-          <div
-            ref="checkingIndicatorRef"
-            class="indicator-container custom-indicator"
-          ></div>
+          <loading-spinner
+            :active="state.sameWordChecking"
+            fullWidth
+            dir="right"
+          >
+            <input
+              name="text-lang"
+              type="text"
+              :placeholder="'Type the word by ' + currentLang"
+              v-model="state.lang"
+              @input="debounce(checkExisting, 50)"
+            />
+          </loading-spinner>
           <p
             v-if="v$.lang.$error || state.ifExistingSameWord"
             class="error-msg"
@@ -57,13 +59,13 @@
             {{ selectedGroupName || "Choose group name" }}
           </p>
         </div>
-        <div ref="indicatorRef" class="indicator-container">
+        <loading-spinner :active="state.isLoading" dir="center">
           <input
             type="submit"
             :value="!state.isLoading ? 'Add' : ''"
             class="entry-btn"
           />
-        </div>
+        </loading-spinner>
         <router-link to="/add-group" class="entry-links"
           >Do you want to create a new group?</router-link
         >
@@ -72,11 +74,10 @@
   </div>
 </template>
 <script>
-import { computed, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onUnmounted, reactive } from "vue";
 import { required } from "@vuelidate/validators";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
-import { useLoading } from "vue3-loading-overlay";
 import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { LANG } from "@/utils/constants";
@@ -84,17 +85,16 @@ import EmitterBus from "@/utils/eventBus";
 import { createDebounce, resetState } from "@/utils/handlers";
 import Types from "@/store/modules/base/types";
 import Firebase from "@/services/Firebase";
+import { LoadingSpinner } from "@/shared/UI";
 
 export default {
   name: "add-word",
   components: {
     NavigationHeader,
+    LoadingSpinner,
   },
   setup() {
     const store = useStore();
-    let loader = useLoading();
-    const indicatorRef = ref(null);
-    const checkingIndicatorRef = ref(null);
 
     const state = reactive({
       lang: "",
@@ -103,27 +103,6 @@ export default {
       ifExistingSameWord: null,
       sameWordChecking: false,
     });
-
-    watch(
-      () => [state.isLoading, state.sameWordChecking],
-      () => {
-        if (state.sameWordChecking) {
-          loader.show({
-            container: checkingIndicatorRef.value,
-            height: 14,
-            width: 14,
-            color: "#191675",
-          });
-        } else if (state.isLoading) {
-          loader.show({
-            container: indicatorRef.value,
-            height: 18,
-            width: 18,
-            color: "#191675",
-          });
-        } else loader.hide();
-      }
-    );
 
     const currentLang = computed(() => {
       return store.getters["base/getCurrentLang"] || LANG;
@@ -164,8 +143,6 @@ export default {
 
     return {
       v$,
-      checkingIndicatorRef,
-      indicatorRef,
       state,
       currentLang,
       currentLangCapitalize,
@@ -260,13 +237,6 @@ export default {
       color: #000;
     }
   }
-}
-
-.custom-indicator {
-  height: 14px;
-  width: 14px;
-  position: absolute;
-  right: 0;
 }
 
 .checking-same-word-field {

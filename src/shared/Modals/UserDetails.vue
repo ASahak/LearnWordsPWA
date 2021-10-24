@@ -74,7 +74,7 @@
             />
             <p class="paragraphs">{{ lang.title }}</p>
           </label>
-          <div ref="indicatorRef" class="indicator-container">
+          <loading-spinner :active="state.isLoading" dir="center">
             <button
               :disabled="
                 !state.checkedLang || currentLang === state.checkedLang
@@ -84,27 +84,28 @@
             >
               {{ !state.isLoading ? "Switch" : "" }}
             </button>
-          </div>
+          </loading-spinner>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive } from "vue";
 import { useStore } from "vuex";
-import { useLoading } from "vue3-loading-overlay";
 import { useRouter } from "vue-router";
 import EmitterBus from "@/utils/eventBus";
+import { LoadingSpinner } from "@/shared/UI";
 import { LANG, LANGUAGES } from "@/utils/constants";
 
 export default {
   name: "user-details-modal",
+  components: {
+    LoadingSpinner,
+  },
   setup() {
     const store = useStore();
     const { dispatch } = store;
-    let loader = useLoading();
-    const indicatorRef = ref(null);
 
     const state = reactive({
       modalContent: "main",
@@ -113,17 +114,6 @@ export default {
     });
 
     const router = useRouter();
-
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
-    });
 
     const userDetails = computed(() => {
       return store.state.auth?.user || {};
@@ -215,7 +205,6 @@ export default {
       userLangsForSwitching,
       languages,
       currentLang,
-      indicatorRef,
       logOut,
       goToLangContent,
       goToMain,

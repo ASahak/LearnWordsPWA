@@ -23,22 +23,22 @@
             {{ v$.groupName.$errors[0].$message }}
           </p>
         </div>
-        <div ref="indicatorRef" class="indicator-container">
+        <loading-spinner :active="state.isLoading" dir="center">
           <input
             type="submit"
             :value="!state.isLoading ? 'Add' : ''"
             class="entry-btn"
           />
-        </div>
+        </loading-spinner>
       </form>
     </div>
   </div>
 </template>
 <script>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { useLoading } from "vue3-loading-overlay";
+import { LoadingSpinner } from "@/shared/UI";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { createToast } from "mosha-vue-toastify";
 import { resetState } from "@/utils/handlers";
@@ -46,26 +46,13 @@ import { resetState } from "@/utils/handlers";
 export default {
   name: "add-group",
   components: {
+    LoadingSpinner,
     NavigationHeader,
   },
   setup() {
-    let loader = useLoading();
-    const indicatorRef = ref(null);
-
     const state = reactive({
       groupName: "",
       isLoading: false,
-    });
-
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
     });
 
     const rules = computed(() => ({
@@ -74,7 +61,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { v$, state, indicatorRef };
+    return { v$, state };
   },
   methods: {
     async onSubmit() {

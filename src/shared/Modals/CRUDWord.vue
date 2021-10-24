@@ -79,16 +79,17 @@
           I have learned this already
         </label>
         <div class="modal-actions-wrapper">
-          <div ref="indicatorDeleteRef" class="indicator-container">
+          <loading-spinner :active="state.isDeleting" dir="center">
             <button class="btn btn--danger modal-btn" @click.stop="deleteWord">
               {{ state.isDeleting ? "" : "Delete" }}
             </button>
-          </div>
-          <div ref="indicatorUpdateRef" class="indicator-container">
+          </loading-spinner>
+          <div ref="indicatorDeleteRef" class="indicator-container"></div>
+          <loading-spinner :active="state.isUpdating" dir="center">
             <button class="btn btn--default modal-btn" @click.stop="updateWord">
               {{ state.isUpdating ? "" : "Update" }}
             </button>
-          </div>
+          </loading-spinner>
         </div>
       </div>
       <div class="group-list" v-else>
@@ -121,20 +122,23 @@
   </div>
 </template>
 <script>
-import { computed, reactive, ref, toRef, watch } from "vue";
+import { computed, reactive, toRef, watch } from "vue";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { createToast } from "mosha-vue-toastify";
-import { useLoading } from "vue3-loading-overlay";
 import { required } from "@vuelidate/validators";
 import { format } from "date-fns";
 import { LANG } from "@/utils/constants";
 import { createDebounce } from "@/utils/handlers";
+import { LoadingSpinner } from "@/shared/UI";
 import Firebase from "@/services/Firebase";
 import EmitterBus from "@/utils/eventBus";
 
 export default {
   name: "crud-word-modal",
+  components: {
+    LoadingSpinner,
+  },
   props: {
     data: {
       type: Object,
@@ -144,9 +148,6 @@ export default {
   setup(props) {
     const store = useStore();
     const dataWord = toRef(props, "data");
-    const indicatorUpdateRef = ref(null);
-    const indicatorDeleteRef = ref(null);
-    let loader = useLoading();
 
     const state = reactive({
       lang: "",
@@ -158,22 +159,6 @@ export default {
       isLearned: false,
       groupView: false,
     });
-
-    watch(
-      () => [state.isUpdating, state.isDeleting],
-      () => {
-        if (state.isUpdating || state.isDeleting) {
-          loader.show({
-            container: state.isDeleting
-              ? indicatorDeleteRef.value
-              : indicatorUpdateRef.value,
-            height: 18,
-            width: 18,
-            color: "#191675",
-          });
-        } else loader.hide();
-      }
-    );
 
     const currentLang = computed(() => {
       return store.getters["base/getCurrentLang"] || LANG;
@@ -312,8 +297,6 @@ export default {
       resetGroupName,
       format,
       state,
-      indicatorUpdateRef,
-      indicatorDeleteRef,
       currentLangCapitalize,
       debounce: createDebounce(),
     };

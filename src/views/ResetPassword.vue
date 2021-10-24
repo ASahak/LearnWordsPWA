@@ -21,52 +21,39 @@
             {{ v$.email.$errors[0].$message }}
           </p>
         </div>
-        <div ref="indicatorRef" class="indicator-container">
+        <loading-spinner :active="state.isLoading" dir="center">
           <input
             type="submit"
             :value="!state.isLoading ? 'Send' : ''"
             class="entry-btn"
           />
-        </div>
+        </loading-spinner>
       </form>
     </div>
   </div>
 </template>
 <script>
-import { reactive, computed, ref, watchEffect } from "vue";
+import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import useVuelidate from "@vuelidate/core";
-import { useLoading } from "vue3-loading-overlay";
 import { required, email } from "@vuelidate/validators";
 import { createToast } from "mosha-vue-toastify";
 import NavigationHeader from "@/shared/NavigationHeader";
+import { LoadingSpinner } from "@/shared/UI";
 import { resetState } from "@/utils/handlers";
 
 export default {
   name: "reset-password",
   components: {
+    LoadingSpinner,
     NavigationHeader,
   },
   setup() {
-    const indicatorRef = ref(null);
-    let loader = useLoading();
-
     const store = useStore();
 
     const state = reactive({
       email: "",
       isLoading: false,
-    });
-
-    watchEffect(() => {
-      if (state.isLoading) {
-        loader.show({
-          container: indicatorRef.value,
-          height: 18,
-          width: 18,
-          color: "#191675",
-        });
-      } else loader.hide();
     });
 
     const rules = computed(() => ({
@@ -75,7 +62,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { state, v$, store, indicatorRef };
+    return { state, v$, store };
   },
   methods: {
     async onSubmit() {

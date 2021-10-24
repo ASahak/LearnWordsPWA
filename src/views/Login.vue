@@ -37,13 +37,13 @@
             {{ v$.password.$errors[0].$message }}
           </p>
         </div>
-        <div ref="indicatorRef" class="indicator-container">
+        <loading-spinner :active="state.isLoading" dir="center">
           <input
             type="submit"
             :value="!state.isLoading ? 'Sign In' : ''"
             class="entry-btn"
           />
-        </div>
+        </loading-spinner>
         <router-link to="/reset-password" class="entry-links"
           >Forgot password?</router-link
         >
@@ -56,44 +56,29 @@
   </div>
 </template>
 <script>
-import { reactive, computed, ref, watch } from "vue";
+import { reactive, computed } from "vue";
 import { useStore, mapActions } from "vuex";
 import useVuelidate from "@vuelidate/core";
 import { resetState } from "@/utils/handlers";
 import { createToast } from "mosha-vue-toastify";
-import { useLoading } from "vue3-loading-overlay";
 import { required, email } from "@vuelidate/validators";
+import { LoadingSpinner } from "@/shared/UI";
 import NavigationHeader from "@/shared/NavigationHeader";
 
 export default {
   name: "login",
   components: {
+    LoadingSpinner,
     NavigationHeader,
   },
   setup() {
     const store = useStore();
-    const indicatorRef = ref(null);
-    let loader = useLoading();
 
     const state = reactive({
       email: "",
       password: "",
       isLoading: false,
     });
-
-    watch(
-      () => state.isLoading,
-      () => {
-        if (state.isLoading) {
-          loader.show({
-            container: indicatorRef.value,
-            height: 18,
-            width: 18,
-            color: "#191675",
-          });
-        } else loader.hide();
-      }
-    );
 
     const rules = computed(() => ({
       password: { required },
@@ -102,7 +87,7 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    return { store, state, v$, indicatorRef };
+    return { store, state, v$ };
   },
   methods: {
     ...mapActions("auth", ["setUserData"]),
