@@ -22,7 +22,9 @@ export default {
 
     const searchWord = (e) => {
       state.searchValue = e.target.value;
-      EmitterBus.$emit("filters", { searchValue: state.searchValue });
+      EmitterBus.$emit("filters", {
+        searchValue: state.searchValue.toLowerCase(),
+      });
     };
 
     return {

@@ -167,8 +167,8 @@ export default {
         }
         this.state.isLoading = true;
         const { error } = await this.$store.dispatch("auth/addWord", {
-          lang: this.state.lang,
-          arm: this.state.arm,
+          lang: this.state.lang.toLowerCase(),
+          arm: this.state.arm.toLowerCase(),
           groupName: this.selectedGroupName,
         });
         if (error) throw error;
@@ -198,7 +198,7 @@ export default {
         this.state.sameWordChecking = true;
         const { error } = await Firebase.checkExistingWord(
           this.currentLang,
-          this.state.lang,
+          this.state.lang.toLowerCase(),
           this.userId
         );
         if (error) throw error;
