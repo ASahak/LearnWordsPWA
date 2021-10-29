@@ -92,9 +92,13 @@ export default {
   methods: {
     ...mapActions("auth", ["setUserData"]),
     async onSubmit() {
+      let allowingReset = true;
       try {
         const isValid = await this.v$.$validate();
-        if (!isValid) return;
+        if (!isValid) {
+          allowingReset = false;
+          return;
+        }
         this.state.isLoading = true;
         const { error } = await this["setUserData"]({
           email: this.state.email,
@@ -109,11 +113,13 @@ export default {
           hideProgressBar: true,
         });
       } finally {
-        resetState(this.state, ["email", "password"]);
-        await this.$nextTick(() => {
-          this.state.isLoading = false;
-          this.v$.$reset();
-        });
+        if (allowingReset) {
+          resetState(this.state, ["email", "password"]);
+          await this.$nextTick(() => {
+            this.state.isLoading = false;
+            this.v$.$reset();
+          });
+        }
       }
     },
   },
