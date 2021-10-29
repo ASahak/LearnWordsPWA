@@ -40,7 +40,7 @@
           <label>Arm</label>
           <font-awesome-icon icon="file-word" class="input-icon" />
           <input
-            name="text-lang"
+            name="text-arm"
             type="text"
             placeholder="Type the word by arm"
             v-model="state.arm"

@@ -84,7 +84,6 @@
               {{ state.isDeleting ? "" : "Delete" }}
             </button>
           </loading-spinner>
-          <div ref="indicatorDeleteRef" class="indicator-container"></div>
           <loading-spinner :active="state.isUpdating" dir="center">
             <button class="btn btn--default modal-btn" @click.stop="updateWord">
               {{ state.isUpdating ? "" : "Update" }}
