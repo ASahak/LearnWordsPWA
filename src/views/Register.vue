@@ -88,6 +88,7 @@ import useVuelidate from "@vuelidate/core";
 import { required, email, sameAs, minLength } from "@vuelidate/validators";
 import NavigationHeader from "@/shared/NavigationHeader";
 import { LoadingSpinner } from "@/shared/UI";
+import { resetState } from "@/utils/handlers";
 import { createToast } from "mosha-vue-toastify";
 
 export default {
@@ -119,9 +120,13 @@ export default {
   methods: {
     ...mapActions("auth", ["registerUser", "setUserData"]),
     async onSubmit() {
+      let allowingReset = true;
       try {
         const isValid = await this.v$.$validate();
-        if (!isValid) return;
+        if (!isValid) {
+          allowingReset = false;
+          return;
+        }
         this.state.isLoading = true;
         const { msg, error } = await this["registerUser"]({
           username: this.state.username,
@@ -143,7 +148,18 @@ export default {
           hideProgressBar: true,
         });
       } finally {
-        this.state.isLoading = false;
+        if (allowingReset) {
+          resetState(this.state, [
+            "username",
+            "email",
+            "password",
+            "confirm_password",
+          ]);
+          await this.$nextTick(() => {
+            this.state.isLoading = false;
+            this.v$.$reset();
+          });
+        }
       }
     },
   },
