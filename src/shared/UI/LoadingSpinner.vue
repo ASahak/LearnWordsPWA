@@ -1,5 +1,5 @@
 <template>
-  <div class="loading-spinner-container" :style="{ containerStyle }">
+  <div class="loading-spinner-container" :style="containerStyle">
     <slot></slot>
     <div
       :class="['loading-spinner', 'loader-dir--' + loaderDir]"

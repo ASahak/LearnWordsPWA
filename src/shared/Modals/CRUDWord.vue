@@ -259,8 +259,8 @@ export default {
         state.isUpdating = true;
         const { error } = await store.dispatch("base/updateWord", {
           isLearned,
-          word1: lang,
-          word2: arm,
+          word1: lang.toLowerCase(),
+          word2: arm.toLowerCase(),
           groupName,
           userId: userId.value,
           publication: dataWord.value.publication,
