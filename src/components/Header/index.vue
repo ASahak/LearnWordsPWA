@@ -26,7 +26,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 6px 10px;
-  background: linear-gradient(0deg, #eaeaea, transparent);
+  background: linear-gradient(0deg, #eaeaea, rgba(255, 255, 255, 0));
   & .app-logo {
     max-width: 100px;
   }

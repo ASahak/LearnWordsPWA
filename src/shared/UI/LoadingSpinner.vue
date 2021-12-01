@@ -61,11 +61,13 @@ export default {
     -webkit-transform: rotate(0deg);
     -o-transform: rotate(0deg);
     transform: rotate(0deg);
+    -webkit-animation-timing-function: linear;
   }
   to {
     -webkit-transform: rotate(360deg);
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
+    -webkit-animation-timing-function: linear;
   }
 }
 @keyframes rotating {

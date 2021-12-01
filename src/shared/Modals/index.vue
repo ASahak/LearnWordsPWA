@@ -44,7 +44,9 @@ export default {
     onMounted(() => {
       EmitterBus.$on("toggle-modal", (v, data) => {
         ModalComponent.value = v;
-        props.value = data || {};
+        if (v) {
+          props.value = data || {};
+        }
       });
     });
 
@@ -92,9 +94,12 @@ export default {
 }
 
 .modal-leave-to {
-  transition: all 0.2s ease-out;
-  z-index: 2222;
-  opacity: 0;
+  @supports not (-webkit-touch-callout: none) {
+    /* CSS for other than iOS devices */
+    transition: all 0.2s ease-out;
+    z-index: 2222;
+    opacity: 0;
+  }
 }
 
 .modal-leave-active {
