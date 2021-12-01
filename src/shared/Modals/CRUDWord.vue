@@ -50,7 +50,11 @@
             {{ v$.arm.$errors[0].$message }}
           </p>
         </div>
-        <div class="like-input-container" @click.stop="goToGroupView">
+        <div
+          class="like-input-container"
+          @click.stop="goToGroupView"
+          v-if="groups.length"
+        >
           <label>Group name</label>
           <p :class="{ 'value--selected': state.groupName }">
             <font-awesome-icon icon="object-group" class="input-icon" />

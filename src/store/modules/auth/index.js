@@ -22,6 +22,7 @@ export default {
       try {
         await Firebase.logOut();
         commit(Types.SET_USER_DATA, null);
+        commit(Types.SET_WORDS, []);
         payloadCallBack();
       } catch (err) {
         console.error(err);
