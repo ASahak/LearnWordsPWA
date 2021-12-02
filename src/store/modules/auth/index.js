@@ -22,7 +22,17 @@ export default {
       try {
         await Firebase.logOut();
         commit(Types.SET_USER_DATA, null);
-        commit(Types.SET_WORDS, []);
+        commit("base/" + BaseTypes.SET_WORDS, [], { root: true });
+        commit("base/" + BaseTypes.SET_LANGUAGES, [], { root: true });
+        commit("base/" + BaseTypes.SET_GROUPS, [], { root: true });
+        commit("base/" + BaseTypes.SET_SELECTED_GROUP_NAME, null, {
+          root: true,
+        });
+        commit("base/" + BaseTypes.SET_LANGUAGE, null, { root: true });
+        commit("base/" + BaseTypes.SET_WORDS_PAGES_COUNT, null, { root: true });
+        commit("base/" + BaseTypes.SET_STILL_GETTING_WORDS, true, {
+          root: true,
+        });
         payloadCallBack();
       } catch (err) {
         console.error(err);
