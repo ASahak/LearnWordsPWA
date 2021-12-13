@@ -1,124 +1,138 @@
 <template>
   <div class="backdrop-wrapper">
     <div class="modal-container">
-      <h3 class="title" v-if="!state.groupView">
-        Edit word
-        <span
-          class="lnr lnr-cross modal-close-icon"
-          @click.stop="closeDialog"
-        ></span>
-      </h3>
-      <font-awesome-icon
-        v-else
-        icon="arrow-left"
-        @click.stop="goBack"
-        class="back-btn"
+      <WordExamples
+        :word="exampleWordValue"
+        v-if="exampleWordValue"
+        @goBackCRUD="goBackFromExample"
       />
-      <div v-if="!state.groupView">
-        <div
-          :class="[
-            'input-container',
-            { 'error-field': v$.lang.$error || state.ifExistingSameWord },
-          ]"
-        >
-          <label>{{ currentLangCapitalize }}</label>
-          <font-awesome-icon icon="file-word" class="input-icon" />
-          <input
-            name="text-lang"
-            type="text"
-            :placeholder="'Type the word by ' + currentLang"
-            v-model="state.lang"
-            @keyup="debounce(checkExisting, 500)"
-          />
-          <p
-            v-if="v$.lang.$error || state.ifExistingSameWord"
-            class="error-msg"
+      <div v-else>
+        <h3 class="title" v-if="!state.groupView">
+          Edit word
+          <span
+            class="lnr lnr-cross modal-close-icon"
+            @click.stop="closeDialog"
+          ></span>
+        </h3>
+        <font-awesome-icon
+          v-else
+          icon="arrow-left"
+          @click.stop="goBack"
+          class="back-btn"
+        />
+        <div v-if="!state.groupView">
+          <div
+            :class="[
+              'input-container',
+              { 'error-field': v$.lang.$error || state.ifExistingSameWord },
+            ]"
           >
-            {{ v$.lang.$errors[0]?.$message || state.ifExistingSameWord }}
-          </p>
-        </div>
-        <div :class="['input-container', { 'error-field': v$.arm.$error }]">
-          <label>Arm</label>
-          <font-awesome-icon icon="file-word" class="input-icon" />
-          <input
-            name="text-lang"
-            type="text"
-            placeholder="Type the word by arm"
-            v-model="state.arm"
-          />
-          <p v-if="v$.arm.$error" class="error-msg">
-            {{ v$.arm.$errors[0].$message }}
-          </p>
-        </div>
-        <div
-          class="like-input-container"
-          @click.stop="goToGroupView"
-          v-if="groups.length"
-        >
-          <label>Group name</label>
-          <p :class="{ 'value--selected': state.groupName }">
-            <font-awesome-icon icon="object-group" class="input-icon" />
-            {{ state.groupName || "Choose group name" }}
-            <span
-              v-if="state.groupName"
-              class="lnr lnr-cross cancel-value"
-              @click.stop="resetGroupName"
-            ></span>
-          </p>
-        </div>
-        <div class="like-input-container input--date-created">
-          <label>Date created</label>
-          <p :class="{ 'value--selected': dataWord.publication }">
-            <font-awesome-icon icon="calendar-day" class="input-icon" />
-            {{ format(dataWord.publication, "DD/MM/YY") }}
-          </p>
-        </div>
-        <label for="learned" class="input-like-label-checkbox">
-          <input
-            type="checkbox"
-            id="learned"
-            :checked="dataWord.isLearned"
-            v-model="state.isLearned"
-          />
-          I have learned this already
-        </label>
-        <div class="modal-actions-wrapper">
-          <loading-spinner :active="state.isDeleting" dir="center">
-            <button class="btn btn--danger modal-btn" @click.stop="deleteWord">
-              {{ state.isDeleting ? "" : "Delete" }}
-            </button>
-          </loading-spinner>
-          <loading-spinner :active="state.isUpdating" dir="center">
-            <button class="btn btn--default modal-btn" @click.stop="updateWord">
-              {{ state.isUpdating ? "" : "Update" }}
-            </button>
-          </loading-spinner>
-        </div>
-      </div>
-      <div class="group-list" v-else>
-        <div class="groups-list">
-          <label
-            v-for="groupName in groups"
-            :key="groupName"
-            class="groups-list__item"
-          >
+            <label>{{ currentLangCapitalize }}</label>
+            <font-awesome-icon icon="file-word" class="input-icon" />
             <input
-              type="radio"
-              name="group-name"
-              :checked="state.groupName === groupName"
-              @change="changeGroupName(groupName)"
+              name="text-lang"
+              type="text"
+              :placeholder="'Type the word by ' + currentLang"
+              v-model="state.lang"
+              @keyup="debounce(checkExisting, 500)"
             />
-            <p class="paragraphs">{{ groupName }}</p>
-          </label>
-        </div>
-        <div class="modal-actions-wrapper">
-          <button
-            :disabled="!state.groupName"
-            class="btn btn--default modal-btn"
-            @click.stop="selectGroupName"
+            <p
+              v-if="v$.lang.$error || state.ifExistingSameWord"
+              class="error-msg"
+            >
+              {{ v$.lang.$errors[0]?.$message || state.ifExistingSameWord }}
+            </p>
+          </div>
+          <div :class="['input-container', { 'error-field': v$.arm.$error }]">
+            <label>Arm</label>
+            <font-awesome-icon icon="file-word" class="input-icon" />
+            <input
+              name="text-lang"
+              type="text"
+              placeholder="Type the word by arm"
+              v-model="state.arm"
+            />
+            <p v-if="v$.arm.$error" class="error-msg">
+              {{ v$.arm.$errors[0].$message }}
+            </p>
+          </div>
+          <div
+            class="like-input-container"
+            @click.stop="goToGroupView"
+            v-if="groups.length"
           >
-            Select
-          </button>
+            <label>Group name</label>
+            <p :class="{ 'value--selected': state.groupName }">
+              <font-awesome-icon icon="object-group" class="input-icon" />
+              {{ state.groupName || "Choose group name" }}
+              <span
+                v-if="state.groupName"
+                class="lnr lnr-cross cancel-value"
+                @click.stop="resetGroupName"
+              ></span>
+            </p>
+          </div>
+          <div class="like-input-container input--date-created">
+            <label>Date created</label>
+            <p :class="{ 'value--selected': dataWord.publication }">
+              <font-awesome-icon icon="calendar-day" class="input-icon" />
+              {{ format(dataWord.publication, "DD/MM/YY") }}
+            </p>
+          </div>
+          <label for="learned" class="input-like-label-checkbox">
+            <input
+              type="checkbox"
+              id="learned"
+              :checked="dataWord.isLearned"
+              v-model="state.isLearned"
+            />
+            I have learned this already
+          </label>
+          <b class="examples-btn" @click.stop="goToExamples">EXAMPLES</b>
+          <div class="modal-actions-wrapper">
+            <loading-spinner :active="state.isDeleting" dir="center">
+              <button
+                class="btn btn--danger modal-btn"
+                @click.stop="deleteWord"
+              >
+                {{ state.isDeleting ? "" : "Delete" }}
+              </button>
+            </loading-spinner>
+            <loading-spinner :active="state.isUpdating" dir="center">
+              <button
+                class="btn btn--default modal-btn"
+                @click.stop="updateWord"
+              >
+                {{ state.isUpdating ? "" : "Update" }}
+              </button>
+            </loading-spinner>
+          </div>
+        </div>
+        <div class="group-list" v-else>
+          <div class="groups-list">
+            <label
+              v-for="groupName in groups"
+              :key="groupName"
+              class="groups-list__item"
+            >
+              <input
+                type="radio"
+                name="group-name"
+                :checked="state.groupName === groupName"
+                @change="changeGroupName(groupName)"
+              />
+              <p class="paragraphs">{{ groupName }}</p>
+            </label>
+          </div>
+          <div class="modal-actions-wrapper">
+            <button
+              :disabled="!state.groupName"
+              class="btn btn--default modal-btn"
+              @click.stop="selectGroupName"
+            >
+              Select
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -136,11 +150,14 @@ import { createDebounce } from "@/utils/handlers";
 import { LoadingSpinner } from "@/shared/UI";
 import Firebase from "@/services/Firebase";
 import EmitterBus from "@/utils/eventBus";
+import WordExamples from "@/shared/Modals/WordExamples";
+import Types from "@/store/modules/base/types";
 
 export default {
   name: "crud-word-modal",
   components: {
     LoadingSpinner,
+    WordExamples,
   },
   props: {
     data: {
@@ -165,6 +182,10 @@ export default {
 
     const currentLang = computed(() => {
       return store.getters["base/getCurrentLang"] || LANG;
+    });
+
+    const exampleWordValue = computed(() => {
+      return store.getters["base/getExampleWordTitle"];
     });
 
     const groups = computed(() => {
@@ -257,6 +278,18 @@ export default {
       }
     };
 
+    const goToExamples = () => {
+      store.dispatch("base/getWordExamples", state.lang);
+    };
+
+    const goBackFromExample = () => {
+      store.commit("base/" + Types.SET_EXAMPLE_WORDS, {
+        value: null,
+        list: [],
+        status: "not-fulfilled",
+      });
+    };
+
     const updateWord = async () => {
       try {
         const { isLearned, arm, lang, groupName } = state;
@@ -298,6 +331,9 @@ export default {
       updateWord,
       deleteWord,
       resetGroupName,
+      goToExamples,
+      goBackFromExample,
+      exampleWordValue,
       format,
       state,
       currentLangCapitalize,
@@ -327,9 +363,19 @@ export default {
   }
 }
 
+.examples-btn {
+  margin: 16px 0 0;
+  display: block;
+  font-size: 13px;
+  text-decoration: underline;
+  font-style: italic;
+  cursor: pointer;
+}
+
 .title {
   text-align: left;
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .like-input-container {

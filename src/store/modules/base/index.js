@@ -12,6 +12,11 @@ export default {
     words: [],
     wordsPagesCount: null,
     stillGetting: true,
+    exampleWords: {
+      value: null,
+      list: [],
+      status: "not-fulfilled",
+    },
   },
   getters: {
     getStillGetting(state) {
@@ -28,6 +33,15 @@ export default {
     },
     getWordsPagesCount(state) {
       return state.wordsPagesCount;
+    },
+    getExampleWordTitle(state) {
+      return state.exampleWords.value;
+    },
+    getExampleWordsList(state) {
+      return state.exampleWords.list;
+    },
+    isReceivedExampleWordsList(state) {
+      return state.exampleWords.status === "fulfilled";
     },
     getFilteredList:
       (state) =>
@@ -100,6 +114,9 @@ export default {
   mutations: {
     [Types.SET_LANGUAGES](state, payload) {
       state.languages = payload;
+    },
+    [Types.SET_EXAMPLE_WORDS](state, payload) {
+      state.exampleWords = payload;
     },
     [Types.SET_GROUPS](state, payload) {
       state.groups = payload;
@@ -259,6 +276,48 @@ export default {
         console.error(err);
         return { error: err };
       }
+    },
+    getWordExamples({ commit, state }, payload) {
+      commit(Types.SET_EXAMPLE_WORDS, {
+        ...state.exampleWords,
+        value: payload,
+      });
+      const wordArray = payload.split(",")?.map((e) => e.trimStart()) || [];
+
+      const wordsPromises = [],
+        result = [];
+      wordArray.forEach((word) => {
+        wordsPromises.push(
+          new Promise((resolve, reject) => {
+            fetch(process.env.VUE_APP_FREE_WORDS_API + word)
+              .then((res) => res.json())
+              .then((res) => {
+                res.forEach((e) => {
+                  e.meanings.forEach((l) => {
+                    l.definitions.forEach((d) => {
+                      d.example && result.push(d.example);
+                    });
+                  });
+                });
+                resolve(result);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
+        );
+      });
+      Promise.allSettled(wordsPromises).then((result) => {
+        result.forEach((res) => {
+          if (res.status === "fulfilled") {
+            commit(Types.SET_EXAMPLE_WORDS, {
+              ...state.exampleWords,
+              list: res.value,
+              status: "fulfilled",
+            });
+          }
+        });
+      });
     },
   },
 };

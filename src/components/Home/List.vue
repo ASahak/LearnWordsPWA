@@ -29,6 +29,7 @@ import BaseTypes from "@/store/modules/base/types";
 import { BASE } from "@/utils/constants";
 import { LoadingIndicator } from "@/shared/UI";
 import EmitterBus from "@/utils/eventBus";
+import Types from "@/store/modules/base/types";
 
 export default {
   name: "list",
@@ -57,6 +58,11 @@ export default {
 
     const openCrud = (word) => {
       if (word.updated || word.isDeleting) return;
+      store.commit("base/" + Types.SET_EXAMPLE_WORDS, {
+        value: null,
+        list: [],
+        status: "not-fulfilled",
+      });
       EmitterBus.$emit("toggle-modal", "crud-word-modal", { data: word });
     };
 

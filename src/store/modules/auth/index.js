@@ -1,5 +1,5 @@
 import Types from "./types";
-import BaseTypes from "../base/types";
+import BaseTypes from "@/store/modules/base/types";
 import Firebase from "@/services/Firebase";
 
 export default {
