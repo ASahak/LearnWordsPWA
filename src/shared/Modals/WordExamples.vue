@@ -14,11 +14,14 @@
     ]"
   >
     <LoadingIndicator v-if="!listReceived" />
-    <ul v-else class="words-list">
-      <li v-for="(word, index) in exampleWordsList" :key="word + index">
-        {{ word }}
-      </li>
-    </ul>
+    <template v-else>
+      <ul class="words-list" v-if="exampleWordsList.length">
+        <li v-for="(word, index) in exampleWordsList" :key="word + index">
+          {{ word }}
+        </li>
+      </ul>
+      <p v-else class="no-result">No result</p>
+    </template>
   </div>
 </template>
 <script>
@@ -78,6 +81,12 @@ export default {
   &.example-container--still-getting {
     min-height: 50px;
     overflow: hidden;
+  }
+  & .no-result {
+    margin: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
   }
 }
 .words-list {

@@ -292,6 +292,10 @@ export default {
             fetch(process.env.VUE_APP_FREE_WORDS_API + word)
               .then((res) => res.json())
               .then((res) => {
+                if (res.message) {
+                  reject(res.message);
+                  return;
+                }
                 res.forEach((e) => {
                   e.meanings.forEach((l) => {
                     l.definitions.forEach((d) => {
@@ -309,13 +313,11 @@ export default {
       });
       Promise.allSettled(wordsPromises).then((result) => {
         result.forEach((res) => {
-          if (res.status === "fulfilled") {
-            commit(Types.SET_EXAMPLE_WORDS, {
-              ...state.exampleWords,
-              list: res.value,
-              status: "fulfilled",
-            });
-          }
+          commit(Types.SET_EXAMPLE_WORDS, {
+            ...state.exampleWords,
+            list: res.status === "fulfilled" ? res.value : [],
+            status: "fulfilled",
+          });
         });
       });
     },
