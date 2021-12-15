@@ -74,17 +74,19 @@
             />
             <p class="paragraphs">{{ lang.title }}</p>
           </label>
-          <loading-spinner :active="state.isLoading" dir="center">
-            <button
-              :disabled="
-                !state.checkedLang || currentLang === state.checkedLang
-              "
-              class="btn btn--default modal-btn"
-              @click.stop="switchLanguage"
-            >
-              {{ !state.isLoading ? "Switch" : "" }}
-            </button>
-          </loading-spinner>
+          <div class="modal-actions-wrapper">
+            <loading-spinner :active="state.isLoading" dir="center">
+              <button
+                :disabled="
+                  !state.checkedLang || currentLang === state.checkedLang
+                "
+                class="btn btn--default modal-btn"
+                @click.stop="switchLanguage"
+              >
+                {{ !state.isLoading ? "Switch" : "" }}
+              </button>
+            </loading-spinner>
+          </div>
         </div>
       </div>
     </div>
@@ -217,6 +219,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.modal-actions-wrapper {
+  margin: 10px 0 5px;
+  display: flex;
+  justify-content: flex-end;
+}
 .title {
   text-align: left;
   margin-top: 10px;

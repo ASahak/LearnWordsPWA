@@ -88,7 +88,12 @@
             />
             I have learned this already
           </label>
-          <b class="examples-btn" @click.stop="goToExamples">EXAMPLES</b>
+          <b
+            class="examples-btn"
+            @click.stop="goToExamples"
+            v-if="currentLang === 'en'"
+            >EXAMPLES</b
+          >
           <div class="modal-actions-wrapper">
             <loading-spinner :active="state.isDeleting" dir="center">
               <button
