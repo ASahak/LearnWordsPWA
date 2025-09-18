@@ -299,7 +299,7 @@ export default {
                 res.forEach((e) => {
                   e.meanings.forEach((l) => {
                     l.definitions.forEach((d) => {
-                      d.example && result.push(d.example);
+                      d.definition && result.push(d.definition);
                     });
                   });
                 });
